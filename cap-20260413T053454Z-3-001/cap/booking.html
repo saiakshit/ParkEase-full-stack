@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Parking - ParkEase</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Authentication Check -->
+    <div id="authCheck" style="display: none;">
+        <div class="auth-overlay">
+            <div class="auth-modal">
+                <div class="auth-content">
+                    <h2><i class="fas fa-lock"></i> Authentication Required</h2>
+                    <p>Please login or sign up to book parking spots.</p>
+                    <div class="auth-buttons">
+                        <button onclick="window.location.href='login.html'" class="btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        <button onclick="window.location.href='signup.html'" class="btn-secondary">
+                            <i class="fas fa-user-plus"></i> Sign Up
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><i class="fas fa-parking"></i> ParkEase</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="index.html#features" class="nav-link">Features</a></li>
+                <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
+                <li><a href="#" class="nav-link user-menu" id="userMenu" style="display: none;">
+                        <i class="fas fa-user"></i> <span id="navUserName">User</span>
+                        <div class="dropdown-menu">
+                            <a href="dashboard.html">Dashboard</a>
+                            <a href="#" onclick="signOut()">Sign Out</a>
+                        </div>
+                    </a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Booking Section -->
+    <section class="booking-section" id="bookingSection" style="display: block;">
+        <div class="container">
+            <div class="booking-header">
+                <h1><i class="fas fa-map-marker-alt"></i> Book Your Parking Spot</h1>
+                <p>Follow these steps to secure your parking spot</p>
+            </div>
+
+            <!-- Booking Steps -->
+            <div class="booking-steps">
+                <div class="step-indicator">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <span>Location</span>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <span>Spot & Time</span>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <span>Vehicle</span>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <span>Payment</span>
+                    </div>
+                </div>
+
+                <!-- Step 1: Location Selection -->
+                <div class="step-content active" id="step1">
+                    <div class="step-header">
+                        <h2><i class="fas fa-map-marker-alt"></i> Select Location</h2>
+                        <p>Choose your destination or browse available parking locations</p>
+                    </div>
+
+                    <div class="location-selection">
+                        <div class="search-container">
+                            <div class="popular-locations">
+                                <h3>Popular Locations</h3>
+                                <div class="location-grid">
+                                    <div class="location-card" data-location="Downtown Mall"
+                                        onclick="selectLocation(this, 'Downtown Mall')">
+                                        <i class="fas fa-shopping-bag"></i>
+                                        <h4>Downtown Mall</h4>
+                                    </div>
+                                    <div class="location-card" data-location="Central Railway Station"
+                                        onclick="selectLocation(this, 'Central Railway Station')">
+                                        <i class="fas fa-train"></i>
+                                        <h4>Central Railway Station</h4>
+                                    </div>
+                                    <div class="location-card" data-location="City Hospital"
+                                        onclick="selectLocation(this, 'City Hospital')">
+                                        <i class="fas fa-hospital"></i>
+                                        <h4>City Hospital</h4>
+                                    </div>
+                                    <div class="location-card" data-location="University Campus"
+                                        onclick="selectLocation(this, 'University Campus')">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        <h4>University Campus</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <div class="map-container">
+                            <div id="map"></div>
+                            <div class="map-overlay">
+                                <div class="map-info">
+                                    <h3>Interactive Map</h3>
+                                    <p>Click on any marker to select a parking location</p>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+
+                    <div class="step-actions">
+                        <button class="btn-secondary" onclick="window.location.href='index.html'">Back</button>
+                        <button class="btn-primary" onclick="nextStep(2)">Continue</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Spot & Time Selection -->
+                <div class="step-content" id="step2">
+                    <div class="step-header">
+                        <h2><i class="fas fa-clock"></i> Choose Date, Spot & Duration</h2>
+                        <p>Select your preferred date, parking spot and duration</p>
+                    </div>
+
+                    <div class="spot-selection">
+                        <div class="selected-location">
+                            <h3>Selected Location: <span id="selectedLocation">Downtown Mall</span></h3>
+                        </div>
+
+                        <!-- Date Selection -->
+                        <div class="date-selection">
+                            <h3><i class="fas fa-calendar"></i> Select Date</h3>
+                            <div class="date-picker">
+                                <div class="date-nav">
+                                    <button class="date-nav-btn" onclick="previousDates()">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <div class="date-display" id="dateDisplay">Today</div>
+                                    <button class="date-nav-btn" onclick="nextDates()">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                                <div class="date-grid" id="dateGrid">
+                                    <!-- Dates will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="spot-grid">
+                            <div class="spot-category">
+                                <h3><i class="fas fa-parking"></i> Available Spots</h3>
+                                <div class="spots-container" id="spotsContainer">
+                                    <!-- Spots will be populated dynamically -->
+                                </div>
+                            </div>
+
+                            <div class="time-selection">
+                                <h3><i class="fas fa-clock"></i> Select Time</h3>
+                                <div class="time-range">
+                                    <div class="time-input-group">
+                                        <label>From:</label>
+                                        <div class="time-picker">
+                                            <button class="time-btn" onclick="decreaseStartTime()">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <input type="text" id="startTime" value="9:00" readonly>
+                                            <select id="startTimeAMPM" class="time-am-pm">
+                                                <option value="AM">AM</option>
+                                                <option value="PM">PM</option>
+                                            </select>
+                                            <button class="time-btn" onclick="increaseStartTime()">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="time-separator">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </div>
+                                    <div class="time-input-group">
+                                        <label>Till:</label>
+                                        <div class="time-picker">
+                                            <button class="time-btn" onclick="decreaseEndTime()">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <input type="text" id="endTime" value="10:00" readonly>
+                                            <select id="endTimeAMPM" class="time-am-pm">
+                                                <option value="AM">AM</option>
+                                                <option value="PM">PM</option>
+                                            </select>
+                                            <button class="time-btn" onclick="increaseEndTime()">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="time-info">
+                                    <p><i class="fas fa-info-circle"></i> Time slots are in 10-minute intervals</p>
+                                    <p>Duration: <span id="calculatedDuration">1 hour</span> | Total: <span
+                                            id="calculatedTotal">₹25.00</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="booking-summary">
+                            <h3>Booking Summary</h3>
+                            <div class="summary-item">
+                                <span>Location:</span>
+                                <span id="summaryLocation">Downtown Mall</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Date:</span>
+                                <span id="summaryDate">Not selected</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Spot:</span>
+                                <span id="summarySpot">Not selected</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Duration:</span>
+                                <span id="summaryDuration">Not selected</span>
+                            </div>
+                            <div class="summary-item total">
+                                <span>Total:</span>
+                                <span id="summaryTotal">₹0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button class="btn-secondary" onclick="prevStep(1)">Back</button>
+                        <button class="btn-primary" onclick="nextStep(3)">Continue</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Vehicle Details -->
+                <div class="step-content" id="step3">
+                    <div class="step-header">
+                        <h2><i class="fas fa-car"></i> Vehicle Information</h2>
+                        <p>Enter your vehicle details for the booking</p>
+                    </div>
+
+                    <div class="vehicle-form">
+                        <div class="form-group">
+                            <label for="vehicleNumber">Vehicle Number</label>
+                            <div class="input-group">
+                                <i class="fas fa-car"></i>
+                                <input type="text" id="vehicleNumber"
+                                    placeholder="Enter vehicle number (e.g., ABC-1234)" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vehicleType">Vehicle Type</label>
+                            <div class="input-group">
+                                <i class="fas fa-car"></i>
+                                <select id="vehicleType" required>
+                                    <option value="">Select vehicle type</option>
+                                    <option value="car">Car</option>
+                                    <option value="motorcycle">Motorcycle</option>
+                                    <option value="suv">SUV</option>
+                                    <option value="truck">Truck</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vehicleColor">Vehicle Color</label>
+                            <div class="input-group">
+                                <i class="fas fa-palette"></i>
+                                <input type="text" id="vehicleColor" placeholder="Enter vehicle color" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vehicleBrand">Vehicle Brand/Model</label>
+                            <div class="input-group">
+                                <i class="fas fa-car"></i>
+                                <input type="text" id="vehicleBrand"
+                                    placeholder="Enter brand and model (e.g., Toyota Camry)" required>
+                            </div>
+                        </div>
+
+                        <div class="booking-summary">
+                            <h3>Final Summary</h3>
+                            <div class="summary-item">
+                                <span>Location:</span>
+                                <span id="finalLocation">Downtown Mall</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Date:</span>
+                                <span id="finalDate">Today</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Spot:</span>
+                                <span id="finalSpot">Not selected</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Duration:</span>
+                                <span id="finalDuration">Not selected</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Vehicle:</span>
+                                <span id="finalVehicle">ABC-1234</span>
+                            </div>
+                            <div class="summary-item total">
+                                <span>Total:</span>
+                                <span id="finalTotal">₹375.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button class="btn-secondary" onclick="prevStep(2)">Back</button>
+                        <button class="btn-primary" onclick="nextStep(4)">Proceed to Payment</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Payment -->
+                <div class="step-content" id="step4">
+                    <div class="step-header">
+                        <h2><i class="fas fa-credit-card"></i> Payment</h2>
+                        <p>Complete your booking with secure payment</p>
+                    </div>
+
+                    <div class="payment-section">
+                        <div class="payment-methods">
+                            <h3>Select Payment Method</h3>
+                            <div class="payment-options">
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="card" checked>
+                                    <span class="payment-card">
+                                        <i class="fas fa-credit-card"></i>
+                                        <span>Credit/Debit Card</span>
+                                    </span>
+                                </label>
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="paypal">
+                                    <span class="payment-card">
+                                        <i class="fab fa-paypal"></i>
+                                        <span>PayPal</span>
+                                    </span>
+                                </label>
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="wallet">
+                                    <span class="payment-card">
+                                        <i class="fas fa-wallet"></i>
+                                        <span>Digital Wallet</span>
+                                    </span>
+                                </label>
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="upi">
+                                    <span class="payment-card">
+                                        <i class="fas fa-mobile-alt"></i>
+                                        <span>UPI (Paytm, PhonePe, etc.)</span>
+                                    </span>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <!-- PayPal Button Container -->
+                        <div class="paypal-section" id="paypal-section" style="display: none;">
+                            <h3>PayPal Payment</h3>
+                            <div id="paypal-button-container"></div>
+                            <div class="paypal-info">
+                                <p><i class="fab fa-paypal"></i> Secure payment powered by PayPal</p>
+                                <p>You will be redirected to PayPal to complete your payment</p>
+                            </div>
+                            <!-- Debug button for testing -->
+                            <button onclick="testPayPalInit()"
+                                style="background: #007cba; color: white; padding: 10px; margin: 10px 0; border: none; border-radius: 5px; cursor: pointer;">
+                                Test PayPal Initialization
+                            </button>
+                        </div>
+
+                        <!-- UPI Payment Section -->
+                        <div class="upi-section" id="upi-section" style="display: none;">
+                            <h3>UPI Payment</h3>
+                            <p>Choose your preferred UPI app to complete the payment</p>
+                            <div id="upi-button-container" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectUPIApp('Google Pay')">
+                                    <i class="fab fa-google-pay"></i> Google Pay
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectUPIApp('PhonePe')">
+                                    <i class="fas fa-mobile-alt"></i> PhonePe
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectUPIApp('Paytm UPI')">
+                                    <i class="fas fa-rupee-sign"></i> Paytm UPI
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectUPIApp('Amazon Pay UPI')">
+                                    <i class="fab fa-amazon"></i> Amazon Pay UPI
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectUPIApp('BHIM')">
+                                    <i class="fas fa-fingerprint"></i> BHIM
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectUPIApp('WhatsApp Pay')">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp Pay
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectUPIApp('Cred UPI')">
+                                    <i class="fas fa-credit-card"></i> CRED UPI
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectUPIApp('Tata Neu UPI')">
+                                    <i class="fas fa-store"></i> Tata Neu UPI
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectUPIApp('ICICI iMobile UPI')">
+                                    <i class="fas fa-university"></i> ICICI iMobile UPI
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectUPIApp('Axis Pay UPI')">
+                                    <i class="fas fa-building"></i> Axis Pay UPI
+                                </button>
+                            </div>
+                            <div class="upi-info">
+                                <p><i class="fas fa-mobile-alt"></i> Quick and secure UPI payments</p>
+                                <p>Select your preferred UPI app to proceed</p>
+                            </div>
+                        </div>
+
+                        <!-- Digital Wallet Section -->
+                        <div class="wallet-section" id="wallet-section" style="display: none;">
+                            <h3>Digital Wallets</h3>
+                            <p>Select a wallet to continue</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectWalletOption('Google Pay Wallet')">
+                                    <i class="fab fa-google-pay"></i> Google Pay Wallet
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectWalletOption('PhonePe Wallet')">
+                                    <i class="fas fa-wallet"></i> PhonePe Wallet
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectWalletOption('Paytm Wallet')">
+                                    <i class="fas fa-rupee-sign"></i> Paytm Wallet
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectWalletOption('Amazon Pay Wallet')">
+                                    <i class="fab fa-amazon-pay"></i> Amazon Pay
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectWalletOption('Mobikwik Wallet')">
+                                    <i class="fas fa-bolt"></i> Mobikwik
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectWalletOption('Freecharge Wallet')">
+                                    <i class="fas fa-bolt"></i> Freecharge
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectWalletOption('Airtel Money Wallet')">
+                                    <i class="fas fa-signal"></i> Airtel Money
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectWalletOption('JioMoney Wallet')">
+                                    <i class="fas fa-wifi"></i> JioMoney
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectWalletOption('Ola Money Wallet')">
+                                    <i class="fas fa-taxi"></i> Ola Money
+                                </button>
+                                <button class="btn-secondary" style="padding: 10px 16px;"
+                                    onclick="selectWalletOption('SBI Buddy Wallet')">
+                                    <i class="fas fa-landmark"></i> SBI Buddy
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="payment-form">
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number</label>
+                                <div class="input-group">
+                                    <i class="fas fa-credit-card"></i>
+                                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiryDate">Expiry Date</label>
+                                    <div class="input-group">
+                                        <i class="fas fa-calendar"></i>
+                                        <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV</label>
+                                    <div class="input-group">
+                                        <i class="fas fa-lock"></i>
+                                        <input type="text" id="cvv" placeholder="123" maxlength="4">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cardName">Cardholder Name</label>
+                                <div class="input-group">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" id="cardName" placeholder="Enter cardholder name">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="payment-summary">
+                            <h3>Payment Summary</h3>
+                            <div class="summary-item">
+                                <span>Parking Fee:</span>
+                                <span id="paymentParkingFee">₹0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Service Fee:</span>
+                                <span id="paymentServiceFee">₹0.00</span>
+                            </div>
+                            <div class="summary-item total">
+                                <span>Total Amount:</span>
+                                <span id="paymentTotalAmount">₹0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button class="btn-secondary" onclick="prevStep(3)">Back</button>
+                        <button class="btn-primary" onclick="processPayment()">
+                            <i class="fas fa-lock"></i> Pay <span id="paymentButtonAmount">₹0.00</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Firebase SDK (v9 compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+    <script>
+        let currentStep = 1;
+        let selectedSpot = '';
+        let selectedTime = '';
+        let selectedLocation = 'Downtown Mall';
+
+        // Global variables for new features
+        // Initialize selectedDate in LOCAL timezone (not UTC)
+        const todayLocal = new Date();
+        let selectedDate = `${todayLocal.getFullYear()}-${String(todayLocal.getMonth() + 1).padStart(2, '0')}-${String(todayLocal.getDate()).padStart(2, '0')}`;
+        let selectedStartTime = '09:00';
+        let selectedEndTime = '10:00';
+        let currentDateIndex = 0;
+        let availableDates = [];
+        let selectedUPIApp = '';
+        let selectedWalletOption = '';
+        const MIN_BOOKING_MINUTES = 10;
+
+        const ALLOWED_GMAIL_DOMAINS = ['gmail.com', 'googlemail.com'];
+
+        function enforceGmailAccount(user) {
+            if (!user || !user.email) {
+                throw new Error('Authentication required. Please sign in with your Google account.');
+            }
+
+            const email = user.email.toLowerCase();
+            const domain = email.split('@')[1] || '';
+
+            if (!ALLOWED_GMAIL_DOMAINS.includes(domain)) {
+                throw new Error('Please sign in with a valid Gmail account to continue.');
+            }
+
+            // if (!user.emailVerified) {
+            //     throw new Error('Your Google email address is not verified. Please verify it with Google and try again.');
+            // }
+        }
+
+        function combineDateAndTime(dateStr, timeStr) {
+            // Parse date string safely in LOCAL timezone
+            const [year, month, day] = dateStr.split('-').map(Number);
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            
+            // Create date in local timezone
+            const date = new Date();
+            date.setFullYear(year);
+            date.setMonth(month - 1);
+            date.setDate(day);
+            date.setHours(hours);
+            date.setMinutes(minutes);
+            date.setSeconds(0);
+            date.setMilliseconds(0);
+            
+            return date;
+        }
+
+        function isStartTimeValid(selectedDate, selectedStartTime) {
+            const now = new Date();
+            now.setSeconds(0, 0);
+
+            // Get today's date in LOCAL timezone (not UTC)
+            const today = new Date();
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+            // Parse selected date in LOCAL timezone
+            const [year, month, day] = selectedDate.split('-').map(Number);
+            const [hours, minutes] = selectedStartTime.split(':').map(Number);
+
+            // Create start time in LOCAL timezone
+            const startDateTime = new Date();
+            startDateTime.setFullYear(year);
+            startDateTime.setMonth(month - 1);
+            startDateTime.setDate(day);
+            startDateTime.setHours(hours);
+            startDateTime.setMinutes(minutes);
+            startDateTime.setSeconds(0);
+            startDateTime.setMilliseconds(0);
+
+            // Debug logging
+            console.log("🔍 TIME VALIDATION DEBUG:");
+            console.log("NOW (local):", now.toString());
+            console.log("SELECTED DATE:", selectedDate);
+            console.log("TODAY (local):", todayStr);
+            console.log("SELECTED START TIME:", selectedStartTime);
+            console.log("START DATE TIME (local):", startDateTime.toString());
+            console.log("IS TODAY:", selectedDate === todayStr);
+            console.log("TIME COMPARISON:", startDateTime.getTime(), ">", now.getTime(), "=", startDateTime.getTime() > now.getTime());
+
+            // If booking future date → always valid
+            if (selectedDate !== todayStr) {
+                console.log("✅ RESULT: Valid (booking for future date)");
+                return true;
+            }
+
+            // If today → must be future time
+            const isValid = startDateTime.getTime() > now.getTime();
+            console.log("✅ RESULT:", isValid ? "Valid" : "Invalid", "(booking for today)");
+            return isValid;
+        }
+
+        function formatCurrency(amount) {
+            return `₹${amount.toFixed(2)}`;
+        }
+
+        function generateBookingId() {
+            const now = new Date();
+            const datePart = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+            const randomPart = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `SPK${datePart}${randomPart}`;
+        }
+
+        function showMessage(message) {
+            alert(message);
+        }
+
+        // Update user name in navigation
+        function updateNavUserName() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            const navUserNameSpan = document.getElementById('navUserName');
+            if (navUserNameSpan && currentUser) {
+                navUserNameSpan.textContent = currentUser.displayName || `${currentUser.firstName} ${currentUser.lastName}`;
+            }
+        }
+
+        // Check authentication and update user profile
+        firebase.auth().onAuthStateChanged(async function (user) {
+            const authOverlay = document.getElementById('authCheck');
+            const bookingSection = document.getElementById('bookingSection');
+            const userMenu = document.getElementById('userMenu');
+            const userNameSpan = document.getElementById('navUserName');
+
+            if (!authOverlay || !bookingSection) {
+                console.error('Authentication elements are missing on the booking page');
+                return;
+            }
+
+            if (user) {
+                try {
+                    enforceGmailAccount(user);
+
+                    const profileSnapshot = await firebase.database().ref(`users/${user.uid}`).once('value');
+                    const profileData = profileSnapshot.val() || {};
+
+                    const currentUserData = {
+                        id: user.uid,
+                        email: user.email,
+                        firstName: profileData.firstName || user.displayName?.split(' ')[0] || '',
+                        lastName: profileData.lastName || user.displayName?.split(' ').slice(1).join(' ') || '',
+                        displayName: profileData.displayName || user.displayName || user.email.split('@')[0],
+                        phone: profileData.phone || '',
+                        vehicleType: profileData.vehicleType || 'car'
+                    };
+
+                    localStorage.setItem('currentUser', JSON.stringify(currentUserData));
+
+                    if (userMenu) {
+                        userMenu.style.display = 'block';
+                    }
+                    if (userNameSpan) {
+                        userNameSpan.textContent = currentUserData.displayName;
+                    }
+
+                    authOverlay.style.display = 'none';
+                    bookingSection.style.display = 'block';
+
+                    // Initialize booking widgets if not already done
+                    try {
+                        initializeBookingFeatures();
+                    } catch (initError) {
+                        console.error('Error initializing booking widgets:', initError);
+                    }
+                } catch (validationError) {
+                    console.error('User validation failed:', validationError);
+                    alert(validationError.message);
+                    try {
+                        await firebase.auth().signOut();
+                    } catch (signOutError) {
+                        console.error('Failed to sign out after validation failure:', signOutError);
+                    }
+                    if (userMenu) {
+                        userMenu.style.display = 'none';
+                    }
+                    authOverlay.style.display = 'block';
+                    bookingSection.style.display = 'none';
+                }
+            } else {
+                console.log('No user signed in, showing auth check');
+                if (userMenu) {
+                    userMenu.style.display = 'none';
+                }
+                authOverlay.style.display = 'block';
+                bookingSection.style.display = 'none';
+            }
+        });
+
+        function logout() {
+            signOut();
+        }
+
+
+        // Step navigation
+        function nextStep(step) {
+            if (currentStep === 1) {
+                // Check if a location is selected
+                const selectedCard = document.querySelector('.location-card.active');
+                if (!selectedCard) {
+                    alert('Please select a location first');
+                    return;
+                }
+                // Location is selected, proceed to next step
+            }
+
+            if (currentStep === 2) {
+                // Check if spot is selected
+                if (!selectedSpot) {
+                    alert('Please select a parking spot');
+                    return;
+                }
+
+                // Check if time range is selected
+                if (!selectedStartTime || !selectedEndTime) {
+                    alert('Please select both start and end time');
+                    return;
+                }
+
+                // Check if start time is before end time (handle overnight bookings)
+                const startTime = selectedStartTime;
+                const endTime = selectedEndTime;
+                const [startHours, startMinutes] = startTime.split(':').map(Number);
+                const [endHours, endMinutes] = endTime.split(':').map(Number);
+
+                let startTotalMinutes = startHours * 60 + startMinutes;
+                let endTotalMinutes = endHours * 60 + endMinutes;
+
+                // Handle overnight bookings (end time can be less than start time)
+                if (endTotalMinutes <= startTotalMinutes && endTotalMinutes > startTotalMinutes - 60) {
+                    // If it's not an overnight booking and end time is not at least 1 hour after start time
+                    if (endTotalMinutes <= startTotalMinutes) {
+                        alert('End time must be after start time');
+                        return;
+                    }
+                }
+
+                // Check if duration meets the minimum booking window
+                const durationHours = getDurationFromTimes(startTime, endTime);
+                if (durationHours < MIN_BOOKING_MINUTES / 60) { // Less than minimum booking duration
+                    alert(`Booking duration must be at least ${MIN_BOOKING_MINUTES} minutes`);
+                    return;
+                }
+
+                // Validate start time is in the future
+                if (!isStartTimeValid(selectedDate, selectedStartTime)) {
+                    alert('Please choose a start time that is in the future.');
+                    return;
+                }
+            }
+
+            if (currentStep === 3) {
+                const vehicleNumber = document.getElementById('vehicleNumber').value;
+                if (!vehicleNumber) {
+                    alert('Please enter vehicle number');
+                    return;
+                }
+            }
+
+            document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+
+            currentStep = step;
+
+            document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+            document.getElementById(`step${currentStep}`).classList.add('active');
+
+            // Initialize Step 2 components when reaching Step 2
+            if (currentStep === 2) {
+                try {
+                    console.log('Initializing Step 2 components...');
+                    initializeDatePicker();
+                    loadAvailableSlots();
+                    initializeTimeSelection();
+                    console.log('Step 2 components initialized');
+                } catch (error) {
+                    console.error('Error initializing Step 2 components:', error);
+                }
+            }
+        }
+
+        function prevStep(step) {
+            document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+
+            currentStep = step;
+
+            document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+            document.getElementById(`step${currentStep}`).classList.add('active');
+        }
+
+        // Inline location selection function (backup method)
+        function selectLocation(cardElement, locationName) {
+            selectedLocation = locationName;
+
+            // Update all location displays
+            const selectedLocationElement = document.getElementById('selectedLocation');
+            const summaryLocationElement = document.getElementById('summaryLocation');
+            const finalLocationElement = document.getElementById('finalLocation');
+
+            if (selectedLocationElement) selectedLocationElement.textContent = selectedLocation;
+            if (summaryLocationElement) summaryLocationElement.textContent = selectedLocation;
+            if (finalLocationElement) finalLocationElement.textContent = selectedLocation;
+
+            // Remove active class from all cards
+            document.querySelectorAll('.location-card').forEach(c => c.classList.remove('active'));
+            // Add active class to clicked card
+            cardElement.classList.add('active');
+        }
+
+
+
+        // Location selection - moved to initialization function
+        function setupLocationCards() {
+            const locationCards = document.querySelectorAll('.location-card');
+
+            if (locationCards.length === 0) {
+                console.error('No location cards found!');
+                return;
+            }
+
+            locationCards.forEach((card, index) => {
+                // Remove any existing event listeners
+                card.removeEventListener('click', card._locationClickHandler);
+
+                // Create new event handler
+                card._locationClickHandler = function () {
+                    selectedLocation = this.dataset.location;
+
+                    // Update all location displays
+                    const selectedLocationElement = document.getElementById('selectedLocation');
+                    const summaryLocationElement = document.getElementById('summaryLocation');
+                    const finalLocationElement = document.getElementById('finalLocation');
+
+                    if (selectedLocationElement) selectedLocationElement.textContent = selectedLocation;
+                    if (summaryLocationElement) summaryLocationElement.textContent = selectedLocation;
+                    if (finalLocationElement) finalLocationElement.textContent = selectedLocation;
+
+                    // Remove active class from all cards
+                    document.querySelectorAll('.location-card').forEach(c => c.classList.remove('active'));
+                    // Add active class to clicked card
+                    this.classList.add('active');
+
+                    // Reload available slots for the selected location
+                    loadAvailableSlots();
+                };
+
+                // Add event listener
+                card.addEventListener('click', card._locationClickHandler);
+
+                // Add visual feedback for debugging
+                card.style.cursor = 'pointer';
+                card.title = `Click to select ${card.dataset.location}`;
+            });
+        }
+
+        // Vehicle number validation
+        function setupVehicleValidation() {
+            const vehicleInput = document.getElementById('vehicleNumber');
+            if (vehicleInput) {
+                vehicleInput.addEventListener('input', function () {
+                    const vehicleNumber = this.value;
+                    const finalVehicle = document.getElementById('finalVehicle');
+                    if (finalVehicle) {
+                        finalVehicle.textContent = vehicleNumber;
+                    }
+                });
+            }
+        }
+
+        // Payment processing
+        async function processPayment() {
+            const selectedRadio = document.querySelector('input[name="paymentMethod"]:checked');
+            const selectedMethod = selectedRadio ? selectedRadio.value : 'card';
+
+            const paypalSection = document.getElementById('paypal-section');
+            const upiSection = document.getElementById('upi-section');
+            const walletSection = document.getElementById('wallet-section');
+            const cardForm = document.querySelector('.payment-form');
+
+            if (paypalSection) paypalSection.style.display = selectedMethod === 'paypal' ? 'block' : 'none';
+            if (upiSection) upiSection.style.display = selectedMethod === 'upi' ? 'block' : 'none';
+            if (walletSection) walletSection.style.display = selectedMethod === 'wallet' ? 'block' : 'none';
+            if (cardForm) cardForm.style.display = selectedMethod === 'card' ? 'block' : 'none';
+
+            if (selectedMethod === 'paypal') {
+                if (window.ParkEasePayPal && window.ParkEasePayPal.isReady()) {
+                    console.log('PayPal is ready for payment');
+                } else {
+                    console.log('PayPal is initializing...');
+                }
+            } else if (selectedMethod === 'upi') {
+                if (!selectedUPIApp) {
+                    console.log('No UPI app selected, defaulting to first option');
+                    selectedUPIApp = 'Google Pay';
+                }
+            } else if (selectedMethod === 'wallet') {
+                if (!selectedWalletOption) {
+                    console.log('No wallet selected, defaulting to Google Pay Wallet');
+                    selectedWalletOption = 'Google Pay Wallet';
+                }
+            }
+
+            const submitButton = document.querySelector('#step4 .btn-primary');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            submitButton.disabled = true;
+
+            try {
+                const user = firebase.auth().currentUser;
+                enforceGmailAccount(user);
+
+                const vehicleNumberInput = document.getElementById('vehicleNumber');
+                const vehicleNumber = vehicleNumberInput ? vehicleNumberInput.value.trim() : '';
+                if (!vehicleNumber) {
+                    throw new Error('Please enter your vehicle number before completing the booking.');
+                }
+
+                const vehicleTypeSelect = document.getElementById('vehicleType');
+                const vehicleColorInput = document.getElementById('vehicleColor');
+                const vehicleBrandInput = document.getElementById('vehicleBrand');
+
+                const vehicleType = vehicleTypeSelect ? (vehicleTypeSelect.value || 'car') : 'car';
+                const vehicleColor = vehicleColorInput ? vehicleColorInput.value.trim() : '';
+                const vehicleBrand = vehicleBrandInput ? vehicleBrandInput.value.trim() : '';
+
+                const durationHours = getDurationFromTimes(selectedStartTime, selectedEndTime);
+                const durationLabel = durationHours < 1
+                    ? `${Math.round(durationHours * 60)} minutes`
+                    : (durationHours === 1 ? '1 hour' : `${durationHours.toFixed(1)} hours`);
+                const parkingFee = durationHours * 25;
+                const serviceFee = parkingFee * 0.1;
+                const totalAmount = parkingFee + serviceFee;
+
+                const bookingId = generateBookingId();
+                let startDateTime = combineDateAndTime(selectedDate, selectedStartTime);
+                let endDateTime = combineDateAndTime(selectedDate, selectedEndTime);
+                const nowUtc = new Date();
+                
+                // Use the safe validation function
+                if (!isStartTimeValid(selectedDate, selectedStartTime)) {
+                    throw new Error('Selected start time has already passed. Please choose a future slot.');
+                }
+                
+                if (endDateTime <= startDateTime) {
+                    endDateTime.setDate(endDateTime.getDate() + 1);
+                }
+                const expiryDateTime = new Date(endDateTime.getTime() + 15 * 60 * 1000);
+
+                const dateLabel = new Date(selectedDate).toLocaleDateString('en-IN', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                const timeWindow = `${formatTime12Hour(selectedStartTime)} - ${formatTime12Hour(selectedEndTime)}`;
+                const validUntilLabel = `${expiryDateTime.toLocaleDateString('en-IN')} ${expiryDateTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
+                const amountText = formatCurrency(totalAmount);
+
+                const paymentProvider = selectedMethod === 'upi'
+                    ? (selectedUPIApp || 'UPI Payment')
+                    : selectedMethod === 'wallet'
+                        ? (selectedWalletOption || 'Digital Wallet')
+                        : selectedMethod;
+
+                const bookingRecord = {
+                    id: bookingId,
+                    userId: user.uid,
+                    userName: user.displayName || user.email,
+                    userEmail: user.email,
+
+                    location: selectedLocation,
+                    spotNumber: selectedSpot,
+                    date: selectedDate,
+                    startTime: selectedStartTime,
+                    endTime: selectedEndTime,
+                    duration: durationHours,
+                    vehicleNumber,
+                    vehicleType,
+                    vehicleColor,
+                    vehicleBrand,
+                    amount: Number(totalAmount.toFixed(2)),
+                    parkingFee: Number(parkingFee.toFixed(2)),
+                    serviceFee: Number(serviceFee.toFixed(2)),
+                    paymentMethod: selectedMethod,
+                    paymentProvider,
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    bookingStartDateTime: startDateTime.toISOString(),
+                    bookingEndDateTime: endDateTime.toISOString(),
+                    expiryDateTime: expiryDateTime.toISOString(),
+                    validUntil: expiryDateTime.toISOString(),
+                    durationLabel
+                };
+
+                // Save booking to Firebase Realtime Database
+                console.log('Processing payment and saving booking to Firebase...', bookingRecord);
+
+                try {
+                    // Save booking to Firebase
+                    const bookingRef = firebase.database().ref(`bookings/${bookingId}`);
+                    await bookingRef.set(bookingRecord);
+                    // Save booking by location (for admin filtering)
+                    await firebase.database()
+                        .ref(`locationBookings/${selectedLocation}/${bookingId}`)
+                        .set(bookingRecord);
+
+                    console.log('✅ Booking saved to Firebase: bookings/' + bookingId);
+
+                    // Save to user's bookings
+                    const userBookingRef = firebase.database().ref(`users/${user.uid}/bookings/${bookingId}`);
+                    await userBookingRef.set(bookingRecord);
+                    console.log('✅ Booking saved to user bookings: users/' + user.uid + '/bookings/' + bookingId);
+
+                    // Update spot/slot availability in Firebase
+                    const spotRef = firebase.database().ref(`spots/${selectedLocation}/${selectedSpot}`);
+                    await spotRef.update({
+                        isOccupied: true,
+                        currentBooking: {
+                            bookingId: bookingId,
+                            userId: user.uid,
+                            startTime: selectedStartTime,
+                            endTime: selectedEndTime,
+                            date: selectedDate
+                        },
+                        lastUpdated: new Date().toISOString()
+                    });
+                    console.log('✅ Spot availability updated in Firebase: spots/' + selectedLocation + '/' + selectedSpot);
+
+                    // Update location availability count
+                    const locationRef = firebase.database().ref(`locations/${selectedLocation}`);
+                    const locationSnapshot = await locationRef.once('value');
+                    const locationData = locationSnapshot.val() || {};
+                    const currentAvailable = locationData.availableSpots || 0;
+                    await locationRef.update({
+                        availableSpots: Math.max(0, currentAvailable - 1),
+                        lastUpdated: new Date().toISOString()
+                    });
+                    console.log('✅ Location availability updated in Firebase');
+
+                    // Also save to localStorage for offline access (as backup)
+                    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+                    const savedEntry = {
+                        ...bookingRecord,
+                        
+                        savedAt: new Date().toISOString()
+                    };
+                    bookings.push(savedEntry);
+                    localStorage.setItem('bookings', JSON.stringify(bookings));
+
+                    if (user) {
+                        const userBookingsKey = `bookings_${user.uid}`;
+                        const userBookings = JSON.parse(localStorage.getItem(userBookingsKey) || '[]');
+                        userBookings.push(savedEntry);
+                        localStorage.setItem(userBookingsKey, JSON.stringify(userBookings));
+                    }
+
+                    // Prepare success page data
+                    const successBookingData = {
+                        location: selectedLocation,
+                        date: selectedDate,
+                        spot: selectedSpot,
+                        startTime: selectedStartTime,
+                        endTime: selectedEndTime,
+                        duration: durationLabel,
+                        vehicle: vehicleNumber,
+                        vehicleType,
+                        amount: amountText,
+                        parkingFee: formatCurrency(parkingFee),
+                        serviceFee: formatCurrency(serviceFee),
+                        bookingId,
+                        dateTime: startDateTime.toLocaleString('en-IN'),
+                        validUntil: validUntilLabel,
+                        paymentMethod: paymentProvider
+                    };
+
+                    sessionStorage.setItem('bookingData', JSON.stringify(successBookingData));
+                    console.log('✅ All booking data saved successfully!');
+
+                    window.location.href = 'success.html';
+                } catch (firebaseError) {
+                    console.error('❌ Firebase save failed:', firebaseError);
+                    throw new Error('Failed to save booking to database: ' + firebaseError.message);
+                }
+            } catch (error) {
+                console.error('Payment processing failed:', error);
+                alert(error.message || 'Failed to complete the booking. Please try again.');
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+                return;
+            }
+        }
+
+        // Handle payment method selection
+        function setupPaymentMethodSelection() {
+            console.log('Setting up payment method selection...');
+            const paymentRadios = document.querySelectorAll('input[name="paymentMethod"]');
+
+            paymentRadios.forEach((radio) => {
+                radio.addEventListener('change', function () {
+                    console.log('Payment method changed to:', this.value);
+                    const paypalSection = document.getElementById('paypal-section');
+                    const upiSection = document.getElementById('upi-section');
+                    const walletSection = document.getElementById('wallet-section');
+                    const cardForm = document.querySelector('.payment-form');
+
+                    if (paypalSection) paypalSection.style.display = 'none';
+                    if (upiSection) upiSection.style.display = 'none';
+                    if (walletSection) walletSection.style.display = 'none';
+                    if (cardForm) cardForm.style.display = 'none';
+
+                    selectedUPIApp = '';
+                    selectedWalletOption = '';
+
+                    if (this.value === 'paypal') {
+                        console.log('Showing PayPal section...');
+                        if (paypalSection) paypalSection.style.display = 'block';
+
+                        // Initialize PayPal if not already done
+                        if (typeof ParkEasePayPal !== 'undefined' && ParkEasePayPal) {
+                            console.log('PayPal already initialized');
+                        } else {
+                            console.log('Initializing PayPal...');
+                            setTimeout(() => {
+                                if (typeof ParkEasePayPal !== 'undefined') {
+                                    window.ParkEasePayPal = new ParkEasePayPal();
+                                }
+                            }, 1000);
+                        }
+                    } else if (this.value === 'upi') {
+                        console.log('Showing UPI section...');
+                        if (upiSection) upiSection.style.display = 'block';
+                    } else if (this.value === 'wallet') {
+                        console.log('Showing Wallet section...');
+                        if (walletSection) walletSection.style.display = 'block';
+                    } else {
+                        console.log('Showing card form...');
+                        if (cardForm) cardForm.style.display = 'block';
+                    }
+                });
+            });
+
+            console.log('Payment method selection setup complete');
+        }
+
+        function selectUPIApp(appName) {
+            selectedUPIApp = appName;
+            showMessage(`Selected UPI app: ${appName}`);
+        }
+
+        function selectWalletOption(optionName) {
+            selectedWalletOption = optionName;
+            showMessage(`Selected wallet: ${optionName}`);
+        }
+        // Time Selection Functions
+        function initializeTimeSelection() {
+            const enforcement = enforceTimeBoundaries({ silent: true });
+            if (enforcement.noSlotsToday) {
+                selectDate(selectedDate);
+            }
+            syncTimeInputs();
+
+            const startAMPM = document.getElementById('startTimeAMPM');
+            const endAMPM = document.getElementById('endTimeAMPM');
+            if (startAMPM) {
+                startAMPM.value = getAMPMFromTime(selectedStartTime);
+                startAMPM.addEventListener('change', function () {
+                    const time12 = document.getElementById('startTime').value.split(' ')[0];
+                    selectedStartTime = convert12To24Hour(time12, this.value);
+                    enforceTimeBoundaries();
+                    syncTimeInputs();
+                    updateTimeCalculations();
+                });
+            }
+
+            if (endAMPM) {
+                endAMPM.value = getAMPMFromTime(selectedEndTime);
+                endAMPM.addEventListener('change', function () {
+                    const time12 = document.getElementById('endTime').value.split(' ')[0];
+                    selectedEndTime = convert12To24Hour(time12, this.value);
+                    enforceTimeBoundaries({ silent: true });
+                    syncTimeInputs();
+                    updateTimeCalculations();
+                });
+            }
+
+            updateTimeCalculations();
+        }
+
+        function increaseStartTime() {
+            let [hours, minutes] = selectedStartTime.split(':').map(Number);
+
+            minutes += 10;
+            if (minutes >= 60) {
+                minutes = 0;
+                hours += 1;
+            }
+            if (hours >= 24) {
+                hours = 0;
+            }
+
+            const newTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            selectedStartTime = newTime;
+            enforceTimeBoundaries({ silent: true });
+            syncTimeInputs();
+            updateTimeCalculations();
+        }
+
+        function decreaseStartTime() {
+            let [hours, minutes] = selectedStartTime.split(':').map(Number);
+
+            minutes -= 10;
+            if (minutes < 0) {
+                minutes = 50;
+                hours -= 1;
+            }
+            if (hours < 0) {
+                hours = 23;
+            }
+
+            const newTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            selectedStartTime = newTime;
+            enforceTimeBoundaries({ silent: true });
+            syncTimeInputs();
+            updateTimeCalculations();
+        }
+
+        function increaseEndTime() {
+            let [hours, minutes] = selectedEndTime.split(':').map(Number);
+
+            minutes += 10;
+            if (minutes >= 60) {
+                minutes = 0;
+                hours += 1;
+            }
+            if (hours >= 24) {
+                hours = 0;
+            }
+
+            const newTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            selectedEndTime = newTime;
+            enforceTimeBoundaries({ silent: true });
+            syncTimeInputs();
+            updateTimeCalculations();
+        }
+
+        function decreaseEndTime() {
+            let [hours, minutes] = selectedEndTime.split(':').map(Number);
+
+            minutes -= 10;
+            if (minutes < 0) {
+                minutes = 50;
+                hours -= 1;
+            }
+            if (hours < 0) {
+                hours = 23;
+            }
+
+            const newTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            selectedEndTime = newTime;
+            enforceTimeBoundaries({ silent: true });
+            syncTimeInputs();
+            updateTimeCalculations();
+        }
+
+        // Helper function to convert 24-hour time to 12-hour format with AM/PM
+        function formatTime12Hour(time24) {
+            const [hours, minutes] = time24.split(':').map(Number);
+            const period = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours === 0 ? 12 : (hours > 12 ? hours - 12 : hours);
+            return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+        }
+
+        // Helper function to get AM/PM from 24-hour time
+        function getAMPMFromTime(time24) {
+            const [hours] = time24.split(':').map(Number);
+            return hours >= 12 ? 'PM' : 'AM';
+        }
+
+        // Helper function to convert 12-hour time with AM/PM to 24-hour format
+        function convert12To24Hour(time12, ampm) {
+            const [hours, minutes] = time12.split(':').map(Number);
+            let hour24 = hours;
+
+            if (ampm === 'PM' && hours !== 12) {
+                hour24 = hours + 12;
+            } else if (ampm === 'AM' && hours === 12) {
+                hour24 = 0;
+            }
+
+            return `${hour24.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        function timeStringToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        function isTimeBefore(timeA, timeB) {
+            return timeStringToMinutes(timeA) < timeStringToMinutes(timeB);
+        }
+
+        function addMinutesToTime(timeStr, minutesToAdd) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const date = new Date();
+            date.setHours(hours, minutes, 0, 0);
+            date.setMinutes(date.getMinutes() + minutesToAdd);
+            const hh = String(date.getHours()).padStart(2, '0');
+            const mm = String(date.getMinutes()).padStart(2, '0');
+            return `${hh}:${mm}`;
+        }
+
+        function getMinimumStartTimeForSelectedDate() {
+            if (!selectedDate) {
+                return { minTime: '00:00', hasAvailability: true };
+            }
+
+            // Get today's date in LOCAL timezone (not UTC)
+            const today = new Date();
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+            if (selectedDate !== todayStr) {
+                return { minTime: '00:00', hasAvailability: true };
+            }
+
+            const candidate = new Date();
+            candidate.setSeconds(0, 0);
+            candidate.setMinutes(candidate.getMinutes() + MIN_BOOKING_MINUTES);
+
+            const remainder = candidate.getMinutes() % MIN_BOOKING_MINUTES;
+            if (remainder !== 0) {
+                candidate.setMinutes(candidate.getMinutes() + (MIN_BOOKING_MINUTES - remainder));
+            }
+
+            // Allow same-day bookings until 23:00 (11:00 PM)
+            // If calculated time goes past midnight, allow booking up to 23:00 instead
+            const maxTimeForToday = new Date(today);
+            maxTimeForToday.setHours(23, 0, 0, 0);
+
+            if (candidate > maxTimeForToday) {
+                return { minTime: '23:00', hasAvailability: true };
+            }
+
+            const hh = String(candidate.getHours()).padStart(2, '0');
+            const mm = String(candidate.getMinutes()).padStart(2, '0');
+            return { minTime: `${hh}:${mm}`, hasAvailability: true };
+        }
+
+        function syncStartTimeInputs() {
+            const startInput = document.getElementById('startTime');
+            if (startInput) {
+                startInput.value = formatTime12Hour(selectedStartTime);
+            }
+            const startAMPM = document.getElementById('startTimeAMPM');
+            if (startAMPM) {
+                startAMPM.value = getAMPMFromTime(selectedStartTime);
+            }
+        }
+
+        function syncEndTimeInputs() {
+            const endInput = document.getElementById('endTime');
+            if (endInput) {
+                endInput.value = formatTime12Hour(selectedEndTime);
+            }
+            const endAMPM = document.getElementById('endTimeAMPM');
+            if (endAMPM) {
+                endAMPM.value = getAMPMFromTime(selectedEndTime);
+            }
+        }
+
+        function syncTimeInputs() {
+            syncStartTimeInputs();
+            syncEndTimeInputs();
+        }
+
+        function enforceTimeBoundaries(options = {}) {
+            const { silent = false } = options;
+            const minInfo = getMinimumStartTimeForSelectedDate();
+
+            if (!minInfo.hasAvailability) {
+                if (!silent) {
+                    showMessage('All remaining slots for today are in the past. Please choose a future date.');
+                }
+                return { adjustedStart: false, adjustedEnd: false, noSlotsToday: true };
+            }
+
+            let adjustedStart = false;
+            let adjustedEnd = false;
+
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            // Only enforce boundaries for today's bookings
+            if (selectedDate === todayStr && isTimeBefore(selectedStartTime, minInfo.minTime)) {
+                selectedStartTime = minInfo.minTime;
+                adjustedStart = true;
+            }
+
+            const minEndTime = addMinutesToTime(selectedStartTime, MIN_BOOKING_MINUTES);
+            if (isTimeBefore(selectedEndTime, minEndTime)) {
+                selectedEndTime = minEndTime;
+                adjustedEnd = true;
+            }
+
+            return { adjustedStart, adjustedEnd, noSlotsToday: false };
+        }
+
+        function updateTimeCalculations() {
+            const enforcement = enforceTimeBoundaries({ silent: true });
+            if (enforcement.adjustedStart || enforcement.adjustedEnd) {
+                syncTimeInputs();
+            }
+            const startTime = selectedStartTime;
+            const endTime = selectedEndTime;
+
+            // Calculate duration in hours
+            const [startHours, startMinutes] = startTime.split(':').map(Number);
+            const [endHours, endMinutes] = endTime.split(':').map(Number);
+
+            let startTotalMinutes = startHours * 60 + startMinutes;
+            let endTotalMinutes = endHours * 60 + endMinutes;
+
+            // Handle overnight bookings
+            if (endTotalMinutes < startTotalMinutes) {
+                endTotalMinutes += 24 * 60; // Add 24 hours
+            }
+
+            const durationMinutes = endTotalMinutes - startTotalMinutes;
+            const durationHours = durationMinutes / 60;
+
+            // Calculate price (₹25 per hour)
+            const price = durationHours * 25;
+
+            // Update display
+            const calculatedDuration = document.getElementById('calculatedDuration');
+            const calculatedTotal = document.getElementById('calculatedTotal');
+
+            if (calculatedDuration) {
+                if (durationHours < 1) {
+                    calculatedDuration.textContent = `${durationMinutes} minutes`;
+                } else if (durationHours === 1) {
+                    calculatedDuration.textContent = '1 hour';
+                } else {
+                    calculatedDuration.textContent = `${durationHours.toFixed(1)} hours`;
+                }
+            }
+
+            if (calculatedTotal) {
+                calculatedTotal.textContent = `₹${price.toFixed(2)}`;
+            }
+
+            // Update summary
+            updateSummary();
+            updatePaymentSummary();
+        }
+
+        function getDurationFromTimes(startTime, endTime) {
+            const [startHours, startMinutes] = startTime.split(':').map(Number);
+            const [endHours, endMinutes] = endTime.split(':').map(Number);
+
+            let startTotalMinutes = startHours * 60 + startMinutes;
+            let endTotalMinutes = endHours * 60 + endMinutes;
+
+            if (endTotalMinutes < startTotalMinutes) {
+                endTotalMinutes += 24 * 60;
+            }
+
+            return (endTotalMinutes - startTotalMinutes) / 60;
+        }
+
+        // Dynamic Slot Management
+        async function loadAvailableSlots() {
+            const spotsContainer = document.getElementById('spotsContainer');
+            if (!spotsContainer) {
+                console.error('Spots container element not found!');
+                return;
+            }
+
+            // Show loading state
+            spotsContainer.innerHTML = '<div class="loading">Loading available spots...</div>';
+
+            try {
+                // Load spots from Firebase for the selected location and date
+                const location = selectedLocation || 'Downtown Mall';
+                const date = selectedDate || new Date().toISOString().split('T')[0];
+
+                // Get spots from Firebase
+                const spotsRef = firebase.database().ref(`spots/${location}`);
+                const spotsSnapshot = await spotsRef.once('value');
+                let spotsData = spotsSnapshot.val();
+
+                // If no spots exist in Firebase, initialize them
+                if (!spotsData) {
+                    console.log('Initializing spots in Firebase for location:', location);
+                    spotsData = {};
+                    for (let i = 1; i <= 12; i++) {
+                        const spotNumber = `P${i}`;
+                        spotsData[spotNumber] = {
+                            id: `${location}_${spotNumber}`,
+                            location: location,
+                            spotNumber: spotNumber,
+                            isOccupied: false,
+                            hourlyRate: 25.00,
+                            type: 'car',
+                            currentBooking: null,
+                            lastUpdated: new Date().toISOString()
+                        };
+                    }
+                    // Save initialized spots to Firebase
+                    await spotsRef.set(spotsData);
+                    console.log('✅ Spots initialized in Firebase for', location);
+                }
+
+                // Check for active bookings on the selected date
+                const bookingsRef = firebase.database().ref('bookings');
+                const bookingsQuery = bookingsRef.orderByChild('date').equalTo(date);
+                const bookingsSnapshot = await bookingsQuery.once('value');
+                const bookingsData = bookingsSnapshot.val() || {};
+
+                // Create a map of occupied spots for this location and date
+                const occupiedSpots = new Set();
+                Object.values(bookingsData).forEach(booking => {
+                    if (booking.location === location &&
+                        (booking.status === 'active' || booking.status === 'scheduled')) {
+                        occupiedSpots.add(booking.spotNumber);
+                    }
+                });
+
+                // Generate 24 spots (P1-P24) with real occupancy data
+                const spots = [];
+                for (let i = 1; i <= 24; i++) {
+                    const spotNumber = `P${i}`;
+                    const spotData = spotsData[spotNumber];
+                    const isOccupied = occupiedSpots.has(spotNumber) || (spotData && spotData.isOccupied);
+
+                    spots.push({
+                        number: spotNumber,
+                        isOccupied: isOccupied,
+                        isSelected: false,
+                        data: spotData
+                    });
+                }
+
+                // Render spots
+                spotsContainer.innerHTML = spots.map(spot => `
+                    <div class="spot-item ${spot.isOccupied ? 'occupied' : 'available'}" 
+                         data-spot="${spot.number}" 
+                         onclick="${spot.isOccupied ? '' : 'selectSpot(\'' + spot.number + '\')'}">
+                        <span class="spot-number">${spot.number}</span>
+                        <span class="spot-status">${spot.isOccupied ? 'Occupied' : 'Available'}</span>
+                    </div>
+                `).join('');
+
+                console.log('✅ Loaded slots from Firebase:', spots.length, 'spots');
+            } catch (error) {
+                console.error('❌ Error loading slots from Firebase:', error);
+                // Fallback to generating demo spots if Firebase fails
+                const spots = [];
+                for (let i = 1; i <= 24; i++) {
+                    spots.push({
+                        number: `P${i}`,
+                        isOccupied: false,
+                        isSelected: false
+                    });
+                }
+                spotsContainer.innerHTML = spots.map(spot => `
+                    <div class="spot-item available" 
+                         data-spot="${spot.number}" 
+                         onclick="selectSpot('${spot.number}')">
+                        <span class="spot-number">${spot.number}</span>
+                        <span class="spot-status">Available</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function selectSpot(spotNumber) {
+            // Remove previous selection
+            document.querySelectorAll('.spot-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+
+            // Add selection to clicked spot
+            const selectedSpotElement = document.querySelector(`[data-spot="${spotNumber}"]`);
+            if (selectedSpotElement) {
+                selectedSpotElement.classList.add('selected');
+            }
+
+            selectedSpot = spotNumber;
+            updateSummary();
+
+            // Update final summary
+            const finalSpot = document.getElementById('finalSpot');
+            if (finalSpot) {
+                finalSpot.textContent = spotNumber;
+            }
+        }
+
+        // Update summary with new data
+        function updateSummary() {
+            const summaryDate = document.getElementById('summaryDate');
+            const summaryDuration = document.getElementById('summaryDuration');
+            const summaryTotal = document.getElementById('summaryTotal');
+
+            if (summaryDate) {
+                const selectedDateObj = availableDates.find(d => d.value === selectedDate);
+                summaryDate.textContent = selectedDateObj ? selectedDateObj.label : 'Not selected';
+            }
+
+            if (summaryDuration) {
+                const durationHours = getDurationFromTimes(selectedStartTime, selectedEndTime);
+                if (durationHours < 1) {
+                    const durationMinutes = Math.round(durationHours * 60);
+                    summaryDuration.textContent = `${durationMinutes} minutes`;
+                } else if (durationHours === 1) {
+                    summaryDuration.textContent = '1 hour';
+                } else {
+                    summaryDuration.textContent = `${durationHours.toFixed(1)} hours`;
+                }
+            }
+
+            if (summaryTotal) {
+                const durationHours = getDurationFromTimes(selectedStartTime, selectedEndTime);
+                const price = durationHours * 25; // ₹25 per hour
+                summaryTotal.textContent = `₹${price.toFixed(2)}`;
+            }
+
+            // Update final summary
+            const finalDuration = document.getElementById('finalDuration');
+            const finalTotal = document.getElementById('finalTotal');
+            if (finalDuration) {
+                const durationHours = getDurationFromTimes(selectedStartTime, selectedEndTime);
+                if (durationHours < 1) {
+                    const durationMinutes = Math.round(durationHours * 60);
+                    finalDuration.textContent = `${durationMinutes} minutes`;
+                } else if (durationHours === 1) {
+                    finalDuration.textContent = '1 hour';
+                } else {
+                    finalDuration.textContent = `${durationHours.toFixed(1)} hours`;
+                }
+            }
+            if (finalTotal) {
+                const durationHours = getDurationFromTimes(selectedStartTime, selectedEndTime);
+                const price = durationHours * 25;
+                finalTotal.textContent = `₹${price.toFixed(2)}`;
+            }
+
+            // Update payment summary
+            updatePaymentSummary();
+        }
+
+        // Update payment summary
+        function updatePaymentSummary() {
+            const durationHours = getDurationFromTimes(selectedStartTime, selectedEndTime);
+            const parkingFee = durationHours * 25; // ₹25 per hour
+            const serviceFee = parkingFee * 0.1; // 10% service fee
+            const totalAmount = parkingFee + serviceFee;
+
+            // Update payment summary elements
+            const parkingFeeElement = document.getElementById('paymentParkingFee');
+            const serviceFeeElement = document.getElementById('paymentServiceFee');
+            const totalAmountElement = document.getElementById('paymentTotalAmount');
+            const paymentButtonAmount = document.getElementById('paymentButtonAmount');
+
+            if (parkingFeeElement) parkingFeeElement.textContent = `₹${parkingFee.toFixed(2)}`;
+            if (serviceFeeElement) serviceFeeElement.textContent = `₹${serviceFee.toFixed(2)}`;
+            if (totalAmountElement) totalAmountElement.textContent = `₹${totalAmount.toFixed(2)}`;
+            if (paymentButtonAmount) paymentButtonAmount.textContent = `₹${totalAmount.toFixed(2)}`;
+        }
+
+        // Check and update expired bookings
+        function checkExpiredBookings() {
+            if (window.ParkEaseDB) {
+                window.ParkEaseDB.checkAndUpdateExpiredBookings().then(result => {
+                    if (result.success && result.updatedCount > 0) {
+                        console.log(`Updated ${result.updatedCount} expired bookings`);
+                        loadAvailableSlots(); // Refresh slots
+                    }
+                });
+            }
+        }
+
+        // Initialize date picker
+        function initializeDatePicker() {
+            const dateGrid = document.getElementById('dateGrid');
+            if (!dateGrid) {
+                console.error('Date grid element not found!');
+                return;
+            }
+
+            availableDates = window.ParkEaseDB ? window.ParkEaseDB.getAvailableDates() : getDefaultDates();
+            renderDateGrid();
+            updateDateDisplay();
+        }
+
+        // Get default dates (Monday-based week)
+        function getDefaultDates() {
+            const dates = [];
+            const today = new Date();
+
+            for (let i = 0; i < 30; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+
+                // Get the day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+                const dayOfWeek = date.getDay();
+                // Convert to Monday = 1, Tuesday = 2, ..., Sunday = 7
+                const mondayBasedDay = dayOfWeek === 0 ? 7 : dayOfWeek;
+
+                dates.push({
+                    value: date.toISOString().split('T')[0],
+                    label: date.toLocaleDateString('en-IN', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric'
+                    }),
+                    isToday: i === 0,
+                    isWeekend: date.getDay() === 0 || date.getDay() === 6,
+                    dayOfWeek: mondayBasedDay // 1 = Monday, 2 = Tuesday, ..., 7 = Sunday
+                });
+            }
+
+            return dates;
+        }
+
+        function renderDateGrid() {
+            const dateGrid = document.getElementById('dateGrid');
+            if (!dateGrid) {
+                console.error('Date grid element not found!');
+                return;
+            }
+
+            const startIndex = currentDateIndex;
+            const endIndex = Math.min(startIndex + 7, availableDates.length);
+            const weekDates = availableDates.slice(startIndex, endIndex);
+
+            dateGrid.innerHTML = weekDates.map((date, index) => {
+                const isSelected = date.value === selectedDate;
+                const classes = [
+                    'date-item',
+                    isSelected ? 'selected' : '',
+                    date.isToday ? 'today' : '',
+                    date.isWeekend ? 'weekend' : ''
+                ].filter(Boolean).join(' ');
+
+                // Format the date display properly
+                const dateParts = date.label.split(' ');
+                const dayName = dateParts[0];
+                const monthDay = dateParts.slice(1).join(' ');
+
+                return `
+                    <div class="${classes}" onclick="selectDate('${date.value}')">
+                        <div style="font-weight: 600; font-size: 0.9rem;">${dayName}</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 2px;">${monthDay}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize booking features
+        function initializeBookingFeatures() {
+            try {
+                initializeDatePicker();
+                initializeTimeSelection();
+                loadAvailableSlots();
+                checkExpiredBookings();
+                setupLocationCards();
+                setupPaymentMethodSelection();
+                setupVehicleValidation();
+            } catch (error) {
+                console.error('Error initializing booking features:', error);
+            }
+            // Remove this line - let authentication check handle display
+            // document.getElementById('bookingSection').style.display = 'block';
+        }
+
+
+
+        // Initialize Step 2 components (date picker and available slots)
+        function initializeStep2Components() {
+            try {
+                console.log('Initializing Step 2 components...');
+                initializeDatePicker();
+                loadAvailableSlots();
+                initializeTimeSelection();
+                console.log('Step 2 components initialized');
+            } catch (error) {
+                console.error('Error initializing Step 2 components:', error);
+            }
+        }
+
+        // Initialize page when loaded
+        window.addEventListener('load', function () {
+            const authCheck = document.getElementById('authCheck');
+            const bookingSection = document.getElementById('bookingSection');
+            const userMenu = document.getElementById('userMenu');
+
+            if (!authCheck || !bookingSection || !userMenu) {
+                console.error('Missing required elements on booking page');
+                return;
+            }
+
+            // Setup location cards immediately (regardless of auth status)
+            setupLocationCards();
+
+            // Check if local database is available
+            if (typeof ParkEaseDB === 'undefined') {
+                console.error('Local database not initialized on booking page');
+            } else {
+                console.log('Local database is available on booking page');
+            }
+
+            // Initialize Step 2 components immediately (regardless of auth status)
+            initializeStep2Components();
+
+            // Check if user is logged in
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+            if (currentUser && currentUser.id) {
+                // User is logged in - show booking interface
+                authCheck.style.display = 'none';
+                bookingSection.style.display = 'block';
+                userMenu.style.display = 'block';
+
+                // Update user name
+                const userNameSpan = document.getElementById('userName');
+                if (userNameSpan) {
+                    userNameSpan.textContent = currentUser.firstName + ' ' + currentUser.lastName;
+                }
+
+                // Initialize booking features
+                try {
+                    if (typeof initializeBookingFeatures === 'function') initializeBookingFeatures();
+                } catch (error) {
+                    console.error('Error initializing booking page:', error);
+                }
+            } else {
+                // User is not logged in - show authentication overlay
+                authCheck.style.display = 'block';
+                bookingSection.style.display = 'none';
+                userMenu.style.display = 'none';
+            }
+        });
+
+
+
+
+
+
+
+
+
+        function selectDate(dateValue) {
+            selectedDate = dateValue;
+            let enforcement = enforceTimeBoundaries({ silent: true });
+
+            if (enforcement.noSlotsToday) {
+                const currentIndex = availableDates.findIndex(d => d.value === dateValue);
+                const nextDate = currentIndex !== -1 ? availableDates[currentIndex + 1] : null;
+
+                if (nextDate) {
+                    selectedDate = nextDate.value;
+                    if (typeof showMessage === 'function') {
+                        showMessage("Today's remaining slots have passed. Moved to the next available date.");
+                    }
+                    enforcement = enforceTimeBoundaries({ silent: true });
+                } else if (typeof showMessage === 'function') {
+                    showMessage("All remaining slots for today are in the past. Please choose a future date.");
+                }
+            }
+
+            syncTimeInputs();
+
+            renderDateGrid();
+            updateDateDisplay();
+            updateSummary();
+            loadAvailableSlots();
+
+            const finalDate = document.getElementById('finalDate');
+            if (finalDate) {
+                const selectedDateObj = availableDates.find(d => d.value === selectedDate);
+                finalDate.textContent = selectedDateObj ? selectedDateObj.label : 'Today';
+            }
+        }
+
+        function previousDates() {
+            if (currentDateIndex > 0) {
+                currentDateIndex -= 7;
+                renderDateGrid();
+                updateDateDisplay();
+            }
+        }
+
+        function nextDates() {
+            if (currentDateIndex + 7 < availableDates.length) {
+                currentDateIndex += 7;
+                renderDateGrid();
+                updateDateDisplay();
+            }
+        }
+
+        function updateDateDisplay() {
+            const dateDisplay = document.getElementById('dateDisplay');
+            if (dateDisplay) {
+                const selectedDateObj = availableDates.find(d => d.value === selectedDate);
+                dateDisplay.textContent = selectedDateObj ? selectedDateObj.label : 'Today';
+            }
+        }
+
+
+
+        // Initialize page when loaded
+        window.addEventListener('load', function () {
+            const authCheck = document.getElementById('authCheck');
+            const bookingSection = document.getElementById('bookingSection');
+            const userMenu = document.getElementById('userMenu');
+
+            if (!authCheck || !bookingSection || !userMenu) {
+                console.error('Missing required elements on booking page');
+                return;
+            }
+
+            // Setup location cards immediately (regardless of auth status)
+            setupLocationCards();
+
+            // Check if local database is available
+            if (typeof ParkEaseDB === 'undefined') {
+                console.error('Local database not initialized on booking page');
+            } else {
+                console.log('Local database is available on booking page');
+            }
+
+            // Initialize Step 2 components immediately (regardless of auth status)
+            initializeStep2Components();
+
+            // Check if user is logged in
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+            if (currentUser && currentUser.id) {
+                // User is logged in - show booking interface
+                authCheck.style.display = 'none';
+                bookingSection.style.display = 'block';
+                userMenu.style.display = 'block';
+
+                // Update user name in navigation
+                updateNavUserName();
+
+                // Initialize booking features
+                try {
+                    if (typeof initializeBookingFeatures === 'function') initializeBookingFeatures();
+                } catch (error) {
+                    console.error('Error initializing booking page:', error);
+                }
+            } else {
+                // User is not logged in - show authentication overlay
+                authCheck.style.display = 'block';
+                bookingSection.style.display = 'none';
+                userMenu.style.display = 'none';
+            }
+        });
+
+        // Initialize page when loaded
+        window.addEventListener('load', function () {
+            const authCheck = document.getElementById('authCheck');
+            const bookingSection = document.getElementById('bookingSection');
+            const userMenu = document.getElementById('userMenu');
+
+            if (!authCheck || !bookingSection || !userMenu) {
+                console.error('Missing required elements on booking page');
+                return;
+            }
+
+            // Check if user is logged in
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+            if (currentUser && currentUser.id) {
+                // User is logged in - show booking interface
+                authCheck.style.display = 'none';
+                bookingSection.style.display = 'block';
+                userMenu.style.display = 'block';
+
+                // Update user name in navigation
+                updateNavUserName();
+
+                // Initialize booking features
+                try {
+                    if (typeof initializeBookingFeatures === 'function') initializeBookingFeatures();
+                } catch (error) {
+                    console.error('Error initializing booking page:', error);
+                }
+            } else {
+                // User is not logged in - show authentication overlay
+                authCheck.style.display = 'block';
+                bookingSection.style.display = 'none';
+                userMenu.style.display = 'none';
+            }
+        });
+
+        
+
+        // Test PayPal initialization function
+        function testPayPalInit() {
+            console.log('Testing PayPal initialization...');
+            console.log('PayPal SDK loaded:', typeof paypal !== 'undefined');
+            console.log('ParkEasePayPal class available:', typeof ParkEasePayPal !== 'undefined');
+            console.log('Current ParkEasePayPal instance:', window.ParkEasePayPal);
+
+            if (typeof ParkEasePayPal !== 'undefined') {
+                console.log('Creating new PayPal instance...');
+                window.ParkEasePayPal = new ParkEasePayPal();
+                alert('PayPal initialization test completed. Check console for details.');
+            } else {
+                alert('PayPal class not found. Check if paypal-config.js is loaded properly.');
+            }
+        }
+
+        // Initialize booking features
+    </script>
+</body>
+
+</html>

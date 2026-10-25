@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ParkEase</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase SDK (v9 compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><i class="fas fa-parking"></i> ParkEase</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="index.html#features" class="nav-link">Features</a></li>
+                <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Section -->
+    <section class="auth-section">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+                    <p>Sign in to your ParkEase account</p>
+                </div>
+                
+                <!-- Debug Console -->
+                <div id="debugConsole" style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; display: none;">
+                    <strong>Debug Console:</strong>
+                    <div id="debugLog"></div>
+                </div>
+                
+                <form class="auth-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                            <i class="fas fa-eye toggle-password"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-options">
+                        <label class="checkbox-container remember">
+                            <input type="checkbox" name="remember">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    
+                    <button type="submit" class="auth-button">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+                
+                <div class="auth-divider">
+                    <span id="or-text">OR</span>
+                </div>
+                
+                <div class="social-login">
+                    <button type="button" class="social-button google" onclick="signInWithGoogle()">
+                        <i class="fab fa-google"></i> Continue with Google
+                    </button>
+                </div>
+                
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="script.js"></script>
+    <script>
+        // Debug function
+        function debugLog(message) {
+            const debugLog = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            debugLog.innerHTML += `[${timestamp}] ${message}<br>`;
+            console.log(`[DEBUG] ${message}`);
+        }
+
+        // Show debug console on Ctrl+Shift+D
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                const debugConsole = document.getElementById('debugConsole');
+                debugConsole.style.display = debugConsole.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+
+        const REQUIRE_GMAIL_ONLY = false; // Set true to restrict login to Gmail
+        const ALLOWED_GMAIL_DOMAINS = ['gmail.com', 'googlemail.com'];
+
+        function extractDomain(email) {
+            if (!email || typeof email !== 'string') return '';
+            const parts = email.toLowerCase().split('@');
+            return parts.length === 2 ? parts[1] : '';
+        }
+
+        function isAllowedDomain(email) {
+            if (!REQUIRE_GMAIL_ONLY) return true;
+            const domain = extractDomain(email);
+            return ALLOWED_GMAIL_DOMAINS.includes(domain);
+        }
+
+        // Check Firebase initialization
+        let isRedirecting = false; // Flag to prevent double redirects
+        
+        window.addEventListener('load', function() {
+            debugLog('Page loaded');
+            
+            if (typeof firebase !== 'undefined') {
+                debugLog('Firebase initialized successfully');
+                
+                // Check if user is already signed in
+                firebase.auth().onAuthStateChanged(function(user) {
+                    if (user && !isRedirecting) {
+                        debugLog('User already signed in, redirecting to dashboard');
+                        // Only redirect if we're on the login page
+                        if (window.location.pathname.includes('login.html')) {
+                            isRedirecting = true; // Set flag to prevent double redirects
+                            // Add a small delay to prevent immediate redirect loops
+                            setTimeout(() => {
+                                window.location.replace('dashboard.html');
+                            }, 500);
+                        }
+                    } else {
+                        debugLog('No user signed in, showing login form');
+                    }
+                });
+            } else {
+                debugLog('ERROR: Firebase not initialized');
+            }
+        });
+
+        // Login form handling
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            debugLog('Form submission started');
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const submitButton = this.querySelector('.auth-button');
+            submitButton.disabled = true;
+            
+            debugLog(`Login attempt for: ${email}`);
+            
+            try {
+                // Check if Firebase is available
+                if (typeof firebase === 'undefined') {
+                    const errorMsg = 'Firebase is not initialized. Please refresh the page and try again.';
+                    debugLog(`Firebase error: ${errorMsg}`);
+                    showMessage(errorMsg, 'error');
+                    submitButton.disabled = false;
+                    return;
+                }
+                
+                // Authenticate user with Firebase
+                debugLog('Calling Firebase signInWithEmailAndPassword...');
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                if (!isAllowedDomain(user.email)) {
+                    await firebase.auth().signOut();
+                    showMessage('Please sign in with a Gmail account (gmail.com or googlemail.com).', 'error');
+                    submitButton.disabled = false;
+                    return;
+                }
+
+                if (!user.emailVerified && REQUIRE_GMAIL_ONLY) {
+                    try {
+                        await user.sendEmailVerification();
+                    } catch (verifyError) {
+                        debugLog('Failed to send verification email: ' + verifyError.message);
+                    }
+                    await firebase.auth().signOut();
+                    showMessage('Please verify your email before logging in. Check your inbox for the verification link.', 'error');
+                    submitButton.disabled = false;
+                    return;
+                }
+                
+                debugLog('Firebase authentication successful, getting user data...');
+                
+                // Get additional user data from Firebase Database
+                const userSnapshot = await firebase.database().ref(`users/${user.uid}`).once('value');
+                const userData = userSnapshot.val();
+                
+                if (userData) {
+                    debugLog('User data retrieved from Firebase, storing session...');
+                    
+                    // Store current user for session persistence (Firebase Auth persists by default)
+                    const currentUser = {
+                        id: user.uid,
+                        uid: user.uid,
+                        email: user.email,
+                        firstName: userData.firstName,
+                        lastName: userData.lastName,
+                        displayName: userData.displayName || `${userData.firstName} ${userData.lastName}`,
+                        phone: userData.phone,
+                        vehicleType: userData.vehicleType
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    debugLog('User data stored, redirecting to dashboard...');
+                    showMessage('Login successful! Redirecting to dashboard...', 'success');
+                    
+                    isRedirecting = true; // Set flag to prevent double redirects
+                    setTimeout(() => {
+                        debugLog('Redirecting to dashboard...');
+                        window.location.replace('dashboard.html');
+                    }, 1000);
+                } else {
+                    debugLog('User data not found in Firebase');
+                    showMessage('User profile not found. Please contact support.', 'error');
+                    submitButton.disabled = false;
+                }
+            } catch (error) {
+                debugLog(`Firebase login error: ${error.message}`);
+                let errorMessage = 'Invalid email or password. Please try again.';
+                
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'No account found with this email address.';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Incorrect password. Please try again.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Please enter a valid email address.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = 'Too many failed attempts. Please try again later.';
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    errorMessage = 'This domain is not authorized for Firebase Authentication. Please add it under Authentication → Settings → Authorized domains in the Firebase console.';
+                }
+                
+                showMessage(errorMessage, 'error');
+                submitButton.disabled = false;
+            }
+        });
+        
+        // Toggle password visibility
+        document.querySelector('.toggle-password').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+        
+        // Google Login using Firebase
+async function signInWithGoogle() {
+    debugLog('Google login initiated');
+
+    if (typeof firebase === 'undefined') {
+        showMessage('Firebase not initialized. Refresh page.', 'error');
+        return;
+    }
+
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    try {
+        const result = await firebase.auth().signInWithPopup(provider);
+        const user = result.user;
+
+        debugLog(`Google login successful for ${user.email}`);
+
+        // Save/update user in database
+        await firebase.database().ref(`users/${user.uid}`).update({
+            displayName: user.displayName || user.email.split('@')[0],
+            email: user.email,
+            lastLogin: new Date().toISOString()
+        });
+
+        showMessage('Signed in successfully! Redirecting...', 'success');
+
+        setTimeout(() => {
+            window.location.replace('dashboard.html');
+        }, 1000);
+
+    } catch (error) {
+        debugLog(`Google login error: ${error.message}`);
+        showMessage(error.message, 'error');
+    }
+}
+
+
+        // Show message function
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            
+            const authCard = document.querySelector('.auth-card');
+            authCard.insertBefore(messageDiv, authCard.firstChild);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

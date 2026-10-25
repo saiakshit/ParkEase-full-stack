@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ParkEase</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <style>
+        .admin-container {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .admin-header h1 {
+            margin: 0 0 8px 0;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #f0f0f0;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .admin-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .admin-panel {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .admin-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .auth-required {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .auth-required h2 {
+            color: #667eea;
+            margin-bottom: 16px;
+        }
+
+        .auth-required p {
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .auth-required .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            min-width: 150px;
+        }
+
+        .stat-box .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-box .label {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><i class="fas fa-parking"></i> ParkEase</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="admin.html" class="nav-link active">Admin</a></li>
+                <li><a href="#" onclick="signOutAdmin(); return false;" class="nav-link" style="color:#dc3545;"><i
+                            class="fas fa-sign-out-alt"></i> Sign Out</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="authRequired" class="admin-container auth-required" style="display:none;">
+        <h2><i class="fas fa-lock"></i> Admin Access Required</h2>
+        <p>Please sign in with an admin account to access this panel.</p>
+        <a href="admin-login.html" class="btn">Go to Admin Login</a>
+    </div>
+
+    <div id="adminContent" class="admin-container admin-page" style="display:none;">
+        <div class="admin-header">
+            <h1><i class="fas fa-cog"></i> ParkEase Admin Panel</h1>
+
+            <h3 id="adminLocationText"></h3>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-box"><span class="number" id="statUsers">0</span><br><span class="label">Total Users</span>
+            </div>
+            <div class="stat-box"><span class="number" id="statBookings">0</span><br><span class="label">Total
+                    Bookings</span></div>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="bookings">Bookings</button>
+        </div>
+
+        
+
+        <div id="bookingsPanel" class="admin-panel active">
+            <div style="padding: 16px; overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Vehicle Brand</th>
+                            <th>Vehicle Color</th>
+                            <th>Vehicle Number</th>
+                            <th>Location</th>
+                            <th>Spot</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Time Period</th>
+                        </tr>
+                        
+                        
+                    </thead>
+                    <tbody id="bookingsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>

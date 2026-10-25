@@ -1,0 +1,433 @@
+<!-- filepath: c:\Users\SAI RAM\Documents\cap\signup.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - ParkEase</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase SDK (v9 compat - load once per page) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><i class="fas fa-parking"></i> ParkEase</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="index.html#features" class="nav-link">Features</a></li>
+                <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Signup Section -->
+    <section class="auth-section">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+                    <p>Join ParkEase and start parking smarter today</p>
+                </div>
+                
+                <!-- Debug Console -->
+                <div id="debugConsole" style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; display: none;">
+                    <strong>Debug Console:</strong>
+                    <div id="debugLog"></div>
+                </div>
+                
+                <form class="auth-form" id="signupForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <div class="input-group">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="firstName" name="firstName" placeholder="Enter first name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <div class="input-group">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="lastName" name="lastName" placeholder="Enter last name" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" placeholder="Create a password" required>
+                            <i class="fas fa-eye toggle-password"></i>
+                        </div>
+                        <div class="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-fill"></div>
+                            </div>
+                            <span class="strength-text">Password strength: <span id="strengthText">Weak</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                            <i class="fas fa-eye toggle-password"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="vehicleType">Primary Vehicle Type</label>
+                        <div class="input-group">
+                            <i class="fas fa-car"></i>
+                            <select id="vehicleType" name="vehicleType" required>
+                                <option value="">Select vehicle type</option>
+                                <option value="car">Car</option>
+                                <option value="motorcycle">Motorcycle</option>
+                                <option value="suv">SUV</option>
+                                <option value="truck">Truck</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="auth-button">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                </form>
+                
+                <div class="auth-divider">
+                    <span id="or-text">OR</span>
+                </div>
+                
+                <div class="social-login">
+                    <button type="button" class="social-button google" onclick="signUpWithGoogle()">
+                        <i class="fab fa-google"></i> Sign up with Google
+                    </button>
+                </div>
+                
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="login.html">Sign in here</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="script.js"></script>
+    <script>
+        // Debug function
+        function debugLog(message) {
+            const debugLog = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            debugLog.innerHTML += `[${timestamp}] ${message}<br>`;
+            console.log(`[DEBUG] ${message}`);
+        }
+
+        // Show debug console on Ctrl+Shift+D
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                const debugConsole = document.getElementById('debugConsole');
+                debugConsole.style.display = debugConsole.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+
+        const REQUIRE_GMAIL_ONLY = false; // Set true to restrict signup to Gmail
+        const ALLOWED_GMAIL_DOMAINS = ['gmail.com', 'googlemail.com'];
+
+        function extractDomain(email) {
+            if (!email || typeof email !== 'string') return '';
+            const parts = email.toLowerCase().split('@');
+            return parts.length === 2 ? parts[1] : '';
+        }
+
+        function isAllowedDomain(email) {
+            if (!REQUIRE_GMAIL_ONLY) return true;
+            const domain = extractDomain(email);
+            return ALLOWED_GMAIL_DOMAINS.includes(domain);
+        }
+
+        // Check Firebase initialization
+        let isRedirecting = false; // Flag to prevent double redirects
+        
+        window.addEventListener('load', function() {
+            debugLog('Page loaded');
+            
+            if (typeof firebase !== 'undefined') {
+                debugLog('Firebase initialized successfully');
+                
+                // Check if user is already signed in
+                firebase.auth().onAuthStateChanged(function(user) {
+                    if (user && !isRedirecting) {
+                        debugLog('User already signed in, redirecting to dashboard');
+                        // Only redirect if we're on the signup page
+                        if (window.location.pathname.includes('signup.html')) {
+                            isRedirecting = true; // Set flag to prevent double redirects
+                            // Add a small delay to prevent immediate redirect loops
+                            setTimeout(() => {
+                                window.location.replace('dashboard.html');
+                            }, 500);
+                        }
+                    } else {
+                        debugLog('No user signed in, showing signup form');
+                    }
+                });
+            } else {
+                debugLog('ERROR: Firebase not initialized');
+            }
+        });
+
+        // Signup form handling
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            debugLog('Form submission started');
+            
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const vehicleType = document.getElementById('vehicleType').value;
+            
+            debugLog(`Form data: ${firstName}, ${lastName}, ${email}, ${vehicleType}`);
+            
+            // Validation
+            if (!firstName || !lastName || !email || !password || !vehicleType) {
+                const errorMsg = 'Please fill in all required fields';
+                debugLog(`Validation error: ${errorMsg}`);
+                showMessage(errorMsg, 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                const errorMsg = 'Passwords do not match';
+                debugLog(`Validation error: ${errorMsg}`);
+                showMessage(errorMsg, 'error');
+                return;
+            }
+            
+            if (password.length < 8) {
+                const errorMsg = 'Password must be at least 8 characters long';
+                debugLog(`Validation error: ${errorMsg}`);
+                showMessage(errorMsg, 'error');
+                return;
+            }
+
+            if (!isAllowedDomain(email)) {
+                const errorMsg = 'Please use a Gmail address (gmail.com or googlemail.com) to sign up.';
+                debugLog('Domain validation error: ' + errorMsg);
+                showMessage(errorMsg, 'error');
+                return;
+            }
+            
+            // Check if Firebase is available
+            if (typeof firebase === 'undefined') {
+                const errorMsg = 'Firebase is not initialized. Please refresh the page and try again.';
+                debugLog(`Firebase error: ${errorMsg}`);
+                showMessage(errorMsg, 'error');
+                return;
+            }
+            
+            // Firebase signup
+            const submitButton = this.querySelector('.auth-button');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+            submitButton.disabled = true;
+            
+            try {
+                debugLog('Starting Firebase signup...');
+                
+                debugLog('Calling Firebase createUserWithEmailAndPassword...');
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                debugLog('Firebase user created, saving additional data...');
+                
+                // Save additional user data to Firebase Database (WITHOUT PHONE)
+                await firebase.database().ref(`users/${user.uid}`).set({
+                    firstName,
+                    lastName,
+                    email,
+                    vehicleType,
+                    displayName: `${firstName} ${lastName}`,
+                    createdAt: new Date().toISOString(),
+                    bookings: []
+                });
+                
+                debugLog('User data saved to Firebase, sending verification email...');
+
+                try {
+                    await user.sendEmailVerification();
+                    debugLog('Verification email sent successfully');
+                } catch (verifyError) {
+                    debugLog(`Failed to send verification email: ${verifyError.message}`);
+                }
+
+                showMessage('Account created! Check your email inbox for a verification link, then log in.', 'success');
+
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+
+                try {
+                    await firebase.auth().signOut();
+                } catch (signOutError) {
+                    debugLog(`Sign out after signup failed: ${signOutError.message}`);
+                }
+                setTimeout(() => {
+                    window.location.replace('login.html');
+                }, 1500);
+                return;
+                
+            } catch (error) {
+                debugLog(`Firebase signup error: ${error.message}`);
+                let errorMessage = 'Failed to create account. Please try again.';
+                
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'An account with this email already exists.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'Password should be at least 6 characters long.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Please enter a valid email address.';
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    errorMessage = 'This domain is not authorized for Firebase Authentication. Add it under Authentication → Settings → Authorized domains in the Firebase console.';
+                }
+                
+                showMessage(errorMessage, 'error');
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            }
+        });
+        
+        // Password strength checker
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthFill = document.querySelector('.strength-fill');
+            const strengthText = document.getElementById('strengthText');
+            
+            let strength = 0;
+            let text = 'Weak';
+            
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            switch(strength) {
+                case 0:
+                case 1:
+                    text = 'Weak';
+                    strengthFill.style.width = '20%';
+                    strengthFill.style.backgroundColor = '#ff4444';
+                    break;
+                case 2:
+                case 3:
+                    text = 'Fair';
+                    strengthFill.style.width = '60%';
+                    strengthFill.style.backgroundColor = '#ffaa00';
+                    break;
+                case 4:
+                case 5:
+                    text = 'Strong';
+                    strengthFill.style.width = '100%';
+                    strengthFill.style.backgroundColor = '#00aa00';
+                    break;
+            }
+            
+            strengthText.textContent = text;
+        });
+        
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                const type = input.type === 'password' ? 'text' : 'password';
+                input.type = type;
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        });
+        
+        // Google Sign Up using Firebase directly
+async function signUpWithGoogle() {
+    debugLog('Google sign-up initiated');
+
+    if (typeof firebase === 'undefined') {
+        showMessage('Firebase not initialized. Refresh page.', 'error');
+        return;
+    }
+
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    try {
+        const result = await firebase.auth().signInWithPopup(provider);
+        const user = result.user;
+
+        debugLog(`Google sign-up successful for ${user.email}`);
+
+        // Save/update user in database
+        await firebase.database().ref(`users/${user.uid}`).update({
+            displayName: user.displayName || user.email.split('@')[0],
+            email: user.email,
+            lastLogin: new Date().toISOString()
+        });
+
+        showMessage('Signed in successfully! Redirecting...', 'success');
+
+        setTimeout(() => {
+            window.location.replace('dashboard.html');
+        }, 1000);
+
+    } catch (error) {
+        debugLog(`Google sign-up error: ${error.message}`);
+        showMessage(error.message, 'error');
+    }
+}
+
+
+        // Show message function
+        function showMessage(message, type) {
+            let container = document.getElementById('authMessage');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'authMessage';
+                const authCard = document.querySelector('.auth-card');
+                const form = authCard.querySelector('.auth-form');
+                authCard.insertBefore(container, form);
+            }
+            container.innerHTML = '';
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            container.appendChild(messageDiv);
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

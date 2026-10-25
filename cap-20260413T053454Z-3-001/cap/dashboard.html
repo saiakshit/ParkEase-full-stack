@@ -1,0 +1,1001 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ParkEase</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase SDK (v9 compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <style>
+        .dashboard-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        body.dashboard-page {
+            padding-top: 110px;
+            background: #f3f4ff;
+        }
+
+        .dashboard-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .profile-info h2 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+
+        .profile-info p {
+            margin: 0;
+            color: #666;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card i {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .dashboard-overview {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+            gap: 2rem;
+            margin: 2rem 0 3rem;
+            align-items: stretch;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body.dashboard-page {
+                padding-top: 90px;
+            }
+        }
+
+        .upcoming-booking-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.12), rgba(118, 75, 162, 0.12));
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 18px;
+            padding: 1.8rem;
+            position: relative;
+            overflow: hidden;
+            min-height: 280px;
+        }
+
+        .upcoming-booking-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.05));
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .upcoming-booking-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .upcoming-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 0.8rem;
+            color: #4a5568;
+            height: 100%;
+        }
+
+        .upcoming-empty i {
+            font-size: 2.6rem;
+            color: #667eea;
+        }
+
+        .upcoming-booking {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+        }
+
+        .upcoming-booking h4 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            color: #2d3748;
+        }
+
+        .upcoming-meta {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .upcoming-meta .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+        }
+
+        .upcoming-meta .meta-item i {
+            color: #667eea;
+        }
+
+        .upcoming-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+
+        .upcoming-actions .btn-primary {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .countdown-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            background: rgba(102, 126, 234, 0.15);
+            color: #394b84;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .quick-actions {
+            background: #ffffff;
+    border-radius: 18px;
+    padding: 1rem;
+
+    width: 420px;          /* fixed width */
+    height: 220px;         /* square box */
+
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   /* vertical center */
+    align-items: center;       /* horizontal center */
+    gap: 0.5rem;
+
+    text-align: center;
+        }
+
+        .quick-actions h4 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #1a202c;
+        }
+
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.75rem;
+        }
+        .dashboard-overview{
+    display:flex;
+    justify-content:center;   /* center horizontally */
+    align-items:center;
+    margin-top: 2rem;
+}
+
+
+        .action-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            justify-content: center;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.25);
+            background: rgba(102, 126, 234, 0.08);
+            color: #394b84;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .action-chip:hover:not([disabled]) {
+            background: rgba(102, 126, 234, 0.18);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 18px rgba(102, 126, 234, 0.15);
+        }
+
+        .action-chip[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .dashboard-panels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem auto 4rem;
+            width: min(1100px, 100%);
+        }
+
+        .panel {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .panel h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .panel h4 i {
+            color: #667eea;
+        }
+
+        .panel-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .panel-list li {
+            background: rgba(247, 248, 252, 0.9);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .item-subtitle {
+            font-size: 0.85rem;
+            color: #4a5568;
+        }
+
+        .panel-list li.empty {
+            font-style: italic;
+            color: #6b7280;
+            background: rgba(249, 250, 252, 0.8);
+            align-items: center;
+            text-align: center;
+        }
+
+        .panel-support {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .panel-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            justify-content: center;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.25);
+            background: rgba(102, 126, 234, 0.08);
+            color: #394b84;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .panel-btn:hover {
+            background: rgba(102, 126, 234, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.5rem 0;
+            text-align: left;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .btn-link:hover {
+            color: #4c51bf;
+            text-decoration: underline;
+        }
+
+        .dashboard-tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .booking-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .booking-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .booking-id {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .booking-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-completed {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-cancelled {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .booking-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-danger {
+            background: #ff4444;
+            color: white;
+        }
+
+        .receipt-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .receipt-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .receipt-details {
+            margin-bottom: 20px;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .receipt-total {
+            border-top: 2px solid #eee;
+            padding-top: 15px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        /* Enhanced booking status styles */
+        .booking-status-scheduled {
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .booking-status-active {
+            border-left: 4px solid #10b981;
+        }
+        
+        .booking-status-expired {
+            border-left: 4px solid #ef4444;
+            opacity: 0.8;
+        }
+        
+        .booking-status-cancelled {
+            border-left: 4px solid #6b7280;
+            opacity: 0.7;
+        }
+        
+        .status-scheduled {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .booking-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0 25px 0;
+        }
+
+        .booking-filters .filter-button {
+            border: 1px solid #e5e7eb;
+            background: #f8fafc;
+            color: #374151;
+            padding: 8px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .booking-filters .filter-button:hover {
+            background: #e2e8f0;
+        }
+
+        .booking-filters .filter-button.active {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+        }
+        
+        .status-active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .status-expired {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .status-cancelled {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+        
+        .detail-expiry {
+            background: #fef3c7;
+            border-radius: 6px;
+            padding: 8px;
+            margin: 2px 0;
+        }
+        
+        .detail-expiry .detail-label {
+            color: #d97706;
+            font-weight: 600;
+        }
+        
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: not-allowed;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        /* Receipt QR Section Styles */
+        /* .receipt-qr-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .receipt-qr-section h4 {
+            margin: 0 0 10px 0;
+            color: #374151;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .qr-instruction {
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            margin: 0 0 15px 0;
+            font-style: italic;
+        } */
+
+        /* #receiptQRContainer {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 15px auto;
+            max-width: 250px;
+        }
+
+        .receipt-qr-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .receipt-qr-actions .action-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        } */
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 3em;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .profile-form {
+            display: grid;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .save-btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            background: #5a6fd8;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 10px;
+            }
+            
+            .user-profile {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .booking-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard-page">
+    <!-- Authentication Check -->
+    <div id="authCheck" style="display: none;">
+        <div class="auth-overlay">
+            <div class="auth-modal">
+                <div class="auth-content">
+                    <h2><i class="fas fa-lock"></i> Authentication Required</h2>
+                    <p>Please login or sign up to access your dashboard.</p>
+                    <div class="auth-buttons">
+                        <button onclick="window.location.href='login.html'" class="btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        <button onclick="window.location.href='signup.html'" class="btn-secondary">
+                            <i class="fas fa-user-plus"></i> Sign Up
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><i class="fas fa-parking"></i> ParkEase</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="#" onclick="checkAuthAndBook(); return false;" class="nav-link">Book Parking</a></li>
+                <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+                <li><a href="#" onclick="signOut()" class="nav-link" style="color: #dc3545; font-weight: 600;"><i class="fas fa-sign-out-alt"></i> Sign Out</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container" id="dashboardContainer" style="display: none;">
+        <div class="dashboard-header">
+            <div class="user-profile">
+<div class="profile-icon">
+    <i class="fa-solid fa-user"></i>
+</div>
+                <div class="profile-info">
+                    <h2 id="userName">Loading...</h2>
+                    <p id="userEmail">Loading...</p>
+                    <p id="userVehicle">Vehicle: Loading...</p>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-calendar-check"></i>
+                    <div class="stat-number" id="totalBookings">0</div>
+                    <div class="stat-label">Total Bookings</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-number" id="activeBookings">0</div>
+                    <div class="stat-label">Active Bookings</div>
+                </div>
+                <!-- <div class="stat-card">
+                    <i class="fas fa-dollar-sign"></i>
+                    <div class="stat-number" id="totalSpent">₹0</div>
+                    <div class="stat-label">Total Spent</div>
+                </div> -->
+                <div class="stat-card">
+                    <i class="fas fa-calendar-day"></i>
+                    <div class="stat-number" id="upcomingBookings">0</div>
+                    <div class="stat-label">Upcoming Bookings</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-overview">
+
+            <div class="quick-actions" id="quickActions">
+                <h4>Quick Actions</h4>
+                <div class="quick-actions-grid">
+                    <button class="action-chip" data-action="book-again" disabled>
+                        <i class="fas fa-plus-circle"></i>
+                        Book Another Spot
+                    </button>
+                    
+                    <button class="action-chip" data-action="download-receipt" disabled>
+                        <i class="fas fa-file-download"></i>
+                        View Latest Receipt
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-tabs">
+            <button class="tab-button active" onclick="showTab('bookings')">
+                <i class="fas fa-history"></i> Booking History
+            </button>
+            <button class="tab-button" onclick="showTab('receipts')">
+                <i class="fas fa-receipt"></i> Payment Receipts
+            </button>
+            <button class="tab-button" onclick="showTab('profile')">
+                <i class="fas fa-user"></i> Profile Settings
+            </button>
+        </div>
+
+        <!-- Bookings Tab -->
+        <div id="bookingsTab" class="tab-content">
+            <h3><i class="fas fa-history"></i> Booking History</h3>
+            <div class="booking-filters">
+                <button class="filter-button active" data-filter="all">All</button>
+                <button class="filter-button" data-filter="active">Active</button>
+                <button class="filter-button" data-filter="scheduled">Upcoming</button>
+                <button class="filter-button" data-filter="expired">Expired</button>
+                <button class="filter-button" data-filter="cancelled">Cancelled</button>
+            </div>
+            <div id="bookingsList">
+                <div class="empty-state">
+                    <i class="fas fa-calendar-times"></i>
+                    <h4>No bookings yet</h4>
+                    <p>Start by booking your first parking spot!</p>
+                    <button class="cta-button" onclick="window.location.href='booking.html'">
+                        <i class="fas fa-plus"></i> Book Now</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Receipts Tab -->
+        <div id="receiptsTab" class="tab-content" style="display: none;">
+            <h3><i class="fas fa-receipt"></i> Payment Receipts</h3>
+            <div id="receiptsList">
+                <div class="empty-state">
+                    <i class="fas fa-receipt"></i>
+                    <h4>No receipts yet</h4>
+                    <p>Payment receipts will appear here after your first booking.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profileTab" class="tab-content" style="display: none;">
+            <h3><i class="fas fa-user"></i> Profile Settings</h3>
+            <form id="profileForm" class="profile-form">
+                <div class="form-group">
+                    <label for="profileFirstName">First Name</label>
+                    <input type="text" id="profileFirstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="profileLastName">Last Name</label>
+                    <input type="text" id="profileLastName" required>
+                </div>
+                <div class="form-group">
+                    <label for="profileEmail">Email</label>
+                    <input type="email" id="profileEmail" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileVehicle">Primary Vehicle</label>
+                    <select id="profileVehicle" required>
+                        <option value="car">Car</option>
+                        <option value="motorcycle">Motorcycle</option>
+                        <option value="suv">SUV</option>
+                        <option value="truck">Truck</option>
+                    </select>
+                </div>
+                <button type="submit" class="save-btn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+        </div>
+        <div class="dashboard-panels">
+        <section class="panel" id="notificationsPanel">
+            <h4><i class="fas fa-bell"></i> Notifications & Tips</h4>
+            <ul class="panel-list" id="notificationsList">
+                <li class="empty">No notifications yet. Enjoy your day!</li>
+            </ul>
+        </section>
+        <section class="panel" id="vehiclePanel">
+            <h4><i class="fas fa-car"></i> Saved Vehicles</h4>
+            <ul class="panel-list" id="savedVehiclesList">
+                <li class="empty">Add a booking to save your vehicle automatically.</li>
+            </ul>
+        </section>
+        <section class="panel" id="paymentsPanel">
+            <h4><i class="fas fa-wallet"></i> Payment Overview</h4>
+            <ul class="panel-list" id="paymentMethodsList">
+                <li class="empty">Complete a booking to see your payment methods here.</li>
+            </ul>
+        </section>
+        
+    </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div id="receiptModal" class="receipt-modal">
+        <div class="receipt-content">
+            <button class="close-modal" onclick="closeReceiptModal()">&times;</button>
+            <div class="receipt-header">
+                <h3><i class="fas fa-receipt"></i> Payment Receipt</h3>
+                <p id="receiptDate">Date: Loading...</p>
+            </div>
+            <div class="receipt-details" id="receiptDetails">
+                <!-- Receipt details will be populated here -->
+            </div>
+            <div class="receipt-total" id="receiptTotal">
+                Total: Loading...
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html> 

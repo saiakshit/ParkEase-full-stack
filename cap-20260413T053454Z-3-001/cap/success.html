@@ -1,0 +1,763 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Successful - ParkEase</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // QR Library Status
+    //     window.QRLibraryStatus = {
+    //         qrCodeGenerator: false,
+    //         qrCodeCanvas: false,
+    //         ready: false
+    //     };
+        
+    //     // Check what QR libraries are available
+    //     function checkQRLibraries() {
+    //         console.log('🔍 Checking QR libraries...');
+            
+    //         // Check qrcode-generator library
+    //         if (typeof qrcode !== 'undefined') {
+    //             window.QRLibraryStatus.qrCodeGenerator = true;
+    //             console.log('✅ qrcode-generator available');
+    //         }
+            
+    //         // Check QRCode canvas library
+    //         if (typeof QRCode !== 'undefined') {
+    //             window.QRLibraryStatus.qrCodeCanvas = true;
+    //             console.log('✅ QRCode canvas library available');
+    //         }
+            
+    //         // Set ready status
+    //         window.QRLibraryStatus.ready = window.QRLibraryStatus.qrCodeGenerator || window.QRLibraryStatus.qrCodeCanvas;
+            
+    //         console.log('📊 QR Library Status:', window.QRLibraryStatus);
+    //         return window.QRLibraryStatus.ready;
+    //     }
+        
+    //     // Simple QR generation using qrcode-generator
+    //     function generateSimpleQR(text, containerId) {
+    //         if (!window.QRLibraryStatus.qrCodeGenerator) {
+    //             console.log('❌ Simple QR generator not available');
+    //             return false;
+    //         }
+            
+    //         try {
+    //             console.log('🎯 Generating simple QR with qrcode-generator...');
+                
+    //             const qr = qrcode(0, 'M');
+    //             qr.addData(text);
+    //             qr.make();
+                
+    //             const container = document.getElementById(containerId);
+    //             if (!container) {
+    //                 console.log('❌ Container not found:', containerId);
+    //                 return false;
+    //             }
+                
+    //             // Create QR as HTML table with styling
+    //             const qrHTML = qr.createImgTag(4, 8, "QR Code");
+    //             container.innerHTML = `
+    //                 <div style="text-align: center; padding: 20px;">
+    //                     <div style="display: inline-block; padding: 15px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    //                         ${qrHTML}
+    //                     </div>
+    //                     <p style="margin-top: 15px; color: #666; font-size: 14px;">📱 QR Code Generated Successfully</p>
+    //                 </div>
+    //             `;
+                
+    //             console.log('✅ Simple QR generated successfully!');
+    //             return true;
+    //         } catch (error) {
+    //             console.error('❌ Simple QR generation failed:', error);
+    //             return false;
+    //         }
+    //     }
+        
+    //     // Canvas QR generation using QRCode library
+    //     function generateCanvasQR(text, containerId) {
+    //         if (!window.QRLibraryStatus.qrCodeCanvas) {
+    //             console.log('❌ Canvas QR generator not available');
+    //             return false;
+    //         }
+            
+    //         try {
+    //             console.log('🎯 Generating canvas QR with QRCode library...');
+                
+    //             const container = document.getElementById(containerId);
+    //             if (!container) {
+    //                 console.log('❌ Container not found:', containerId);
+    //                 return false;
+    //             }
+                
+    //             container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Generating QR...</div>';
+                
+    //             QRCode.toCanvas(container, text, {
+    //                 width: 200,
+    //                 height: 200,
+    //                 margin: 2,
+    //                 color: {
+    //                     dark: '#000000',
+    //                     light: '#FFFFFF'
+    //                 }
+    //             }, function (error) {
+    //                 if (error) {
+    //                     console.error('❌ Canvas QR generation failed:', error);
+    //                     return false;
+    //                 } else {
+    //                     console.log('✅ Canvas QR generated successfully!');
+    //                     // Style the canvas
+    //                     const canvas = container.querySelector('canvas');
+    //                     if (canvas) {
+    //                         canvas.style.border = '2px solid #e5e7eb';
+    //                         canvas.style.borderRadius = '12px';
+    //                         canvas.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+    //                         canvas.style.background = 'white';
+    //                     }
+    //                     return true;
+    //                 }
+    //             });
+                
+    //             return true;
+    //         } catch (error) {
+    //             console.error('❌ Canvas QR generation failed:', error);
+    //             return false;
+    //         }
+    //     }
+        
+    //     // Load additional QR libraries if needed
+    //     function loadAdditionalQRLibraries() {
+    //         console.log('🔄 Loading additional QR libraries...');
+            
+    //         // Try alternative CDNs
+    //         const libraries = [
+    //             'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js',
+    //             'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js'
+    //         ];
+            
+    //         let loadIndex = 0;
+            
+    //         function loadNext() {
+    //             if (loadIndex >= libraries.length) {
+    //                 console.log('❌ All QR libraries failed to load');
+    //                 return;
+    //             }
+                
+    //             const script = document.createElement('script');
+    //             script.src = libraries[loadIndex];
+    //             script.onload = function() {
+    //                 console.log(`✅ Loaded QR library from: ${libraries[loadIndex]}`);
+    //                 checkQRLibraries();
+    //                 if (typeof attemptQRGeneration === 'function') {
+    //                     attemptQRGeneration();
+    //                 }
+    //             };
+    //             script.onerror = function() {
+    //                 console.log(`❌ Failed to load: ${libraries[loadIndex]}`);
+    //                 loadIndex++;
+    //                 loadNext();
+    //             };
+    //             document.head.appendChild(script);
+    //         }
+            
+    //         loadNext();
+    //     }
+        
+    //     // Initialize QR libraries on page load
+    //     document.addEventListener('DOMContentLoaded', function() {
+    //         setTimeout(() => {
+    //             if (!checkQRLibraries()) {
+    //                 console.log('🔄 No QR libraries found, loading additional ones...');
+    //                 loadAdditionalQRLibraries();
+    //             } else {
+    //                 console.log('✅ QR libraries ready!');
+    //             }
+    //         }, 1000);
+    //     });
+    // </script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><i class="fas fa-parking"></i> ParkEase</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="index.html#features" class="nav-link">Features</a></li>
+                <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
+                <li><a href="#" class="nav-link user-menu" id="userMenu" style="display: none;">
+                    <i class="fas fa-user"></i> <span id="userName">User</span>
+                    <div class="dropdown-menu">
+                        <a href="dashboard.html">Dashboard</a>
+                        <a href="dashboard.html">Dashboard</a>
+                        <a href="#" onclick="logout()">Logout</a>
+                    </div>
+                </a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Success Section -->
+    <section class="success-section">
+        <div class="container">
+            <div class="success-card">
+                <div class="success-header">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h1>Booking Successful!</h1>
+                    <p>Your parking spot has been reserved successfully. Here are your booking details:</p>
+                </div>
+
+                <div class="booking-details">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="detail-content">
+                                <h3>Location</h3>
+                                <p id="bookingLocation">Downtown Mall</p>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <div class="detail-content">
+                                <h3>Spot Number</h3>
+                                <p id="bookingSpot">A1</p>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="detail-content">
+                                <h3>Date</h3>
+                                <p id="bookingDate">Today</p>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="detail-content">
+                                <h3>Duration</h3>
+                                <p id="bookingDuration">2 Hours</p>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="detail-content">
+                                <h3>Date & Time</h3>
+                                <p id="bookingDateTime">Today, 2:00 PM - 4:00 PM</p>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="detail-content">
+                                <h3>Vehicle Number</h3>
+                                <p id="bookingVehicle">ABC-1234</p>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="detail-content">
+                                <h3>Amount Paid</h3>
+                                <p id="bookingAmount">$5.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <div class="qr-section">
+                    <h2><i class="fas fa-qrcode"></i> Your QR Code</h2>
+                    <p>Show this QR code at the parking entrance to access your spot</p>
+                    
+                    <div class="qr-container">
+                        <div id="qrCode"></div>
+                        <div class="qr-info">
+                            <p><strong>Booking ID:</strong> <span id="bookingId">SPK20241201001</span></p>
+                            <p><strong>Valid Until:</strong> <span id="validUntil">Today, 4:00 PM</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="qr-actions">
+                        <button class="btn-secondary" onclick="downloadQR()">
+                            <i class="fas fa-download"></i> Download QR
+                        </button>
+                        <button class="btn-secondary" onclick="shareQR()">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                        <button class="btn-secondary" onclick="testQRGeneration()" style="background: #f59e0b; color: white;">
+                            <i class="fas fa-flask"></i> Test QR
+                        </button>
+                    </div>
+                </div> -->
+
+                <!-- <div class="instructions">
+                    <h3><i class="fas fa-info-circle"></i> How to Use Your QR Code</h3>
+                    <div class="instruction-steps">
+                        <div class="instruction-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Save Your QR</h4>
+                                <p>Download or take a screenshot so the code is ready the moment you reach the venue.</p>
+                            </div>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Scan at Entrance</h4>
+                                <p>Present the QR at the gate scanner as soon as you arrive at the parking facility.</p>
+                            </div>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Instant Verification</h4>
+                                <p>Our system checks your booking in seconds and automatically opens your reserved slot.</p>
+                            </div>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Keep It Handy</h4>
+                                <p>Hold on to the QR — you’ll reuse it when extending your stay or exiting the parking area.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+
+                <div class="success-actions">
+                    <button class="btn-primary" onclick="window.location.href='dashboard.html'">
+                        <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                    </button>
+                    <button class="btn-secondary" onclick="checkAuthAndBook()">
+                        <i class="fas fa-plus"></i> Book Another Spot
+                    </button>
+                    <button class="btn-secondary" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print Receipt
+                    </button>
+                </div>
+
+                <div class="support-info">
+                    <h3><i class="fas fa-headset"></i> Need Help?</h3>
+                    <p>If you have any questions or need assistance, our support team is here to help:</p>
+                    <div class="support-contacts">
+                        <div class="support-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+91 9390857643</span>
+                        </div>
+                        <div class="support-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>support@smartpark.com</span>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="script.js"></script>
+    <script>
+        // Get booking details from sessionStorage or use defaults
+        let bookingData = JSON.parse(sessionStorage.getItem('bookingData') || '{}');
+        
+        // If no booking data, use defaults
+        if (!bookingData.location) {
+            bookingData = {
+                location: 'Downtown Mall',
+                date: new Date().toISOString().split('T')[0],
+                spot: 'P1',
+                duration: '2 Hours',
+                dateTime: 'Today, 2:00 PM - 4:00 PM',
+                vehicle: 'ABC-1234',
+                amount: '₹50.00',
+                bookingId: 'PARK' + Date.now(),
+                validUntil: 'Today, 4:00 PM'
+            };
+        }
+
+        // Update booking details safely (wait for DOM)
+        function updateBookingDetails() {
+            const bookingLocation = document.getElementById('bookingLocation');
+            const bookingSpot = document.getElementById('bookingSpot');
+            const bookingDate = document.getElementById('bookingDate');
+            const bookingDuration = document.getElementById('bookingDuration');
+            const bookingDateTime = document.getElementById('bookingDateTime');
+            const bookingVehicle = document.getElementById('bookingVehicle');
+            const bookingAmount = document.getElementById('bookingAmount');
+            const bookingId = document.getElementById('bookingId');
+            const validUntil = document.getElementById('validUntil');
+            
+            if (bookingLocation) bookingLocation.textContent = bookingData.location;
+            if (bookingSpot) bookingSpot.textContent = bookingData.spot;
+            if (bookingDate) {
+                bookingDate.textContent = bookingData.date ? new Date(bookingData.date).toLocaleDateString('en-IN', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                }) : 'Today';
+            }
+            if (bookingDuration) bookingDuration.textContent = bookingData.duration;
+            if (bookingDateTime) bookingDateTime.textContent = bookingData.dateTime;
+            if (bookingVehicle) bookingVehicle.textContent = bookingData.vehicle;
+            if (bookingAmount) bookingAmount.textContent = bookingData.amount;
+            if (bookingId) bookingId.textContent = bookingData.bookingId;
+            if (validUntil) validUntil.textContent = bookingData.validUntil;
+        }
+        
+        // Run when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateBookingDetails);
+        } else {
+            updateBookingDetails();
+        }
+
+        // Smart QR generation with multiple fallbacks
+        // function attemptQRGeneration() {
+        //     console.log('🎯 Smart QR Generation Starting...');
+            
+        //     // Check if libraries are available
+        //     if (!checkQRLibraries()) {
+        //         console.log('❌ No QR libraries available');
+        //         showQRFallback('QR libraries not loaded');
+        //         return;
+        //     }
+            
+        //     const qrElement = document.getElementById('qrCode');
+        //     if (!qrElement) {
+        //         console.log('❌ QR element not found');
+        //         return;
+        //     }
+            
+        //     // Enhanced booking data for QR
+        //     const bookingDate = bookingData.date ? new Date(bookingData.date).toLocaleDateString('en-IN') : new Date().toLocaleDateString('en-IN');
+        //     const bookingTime = bookingData.dateTime || 'Not specified';
+        //     const vehicleNumber = bookingData.vehicle || 'Not specified';
+            
+        //     const qrText = `ParkEase:${bookingData.bookingId}|${bookingData.location}|${bookingData.spot}|${bookingDate}|${bookingTime}|${vehicleNumber}|${bookingData.validUntil}|${bookingData.amount}`;
+        //     qrPayload = qrText;
+        //     console.log('📝 QR Text:', qrText);
+            
+        //     // Show loading
+        //     qrElement.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Generating QR Code...</div>';
+            
+        //     // Try canvas QR first (better quality)
+        //     if (window.QRLibraryStatus.qrCodeCanvas) {
+        //         console.log('🎨 Trying canvas QR generation...');
+        //         if (generateCanvasQR(qrText, 'qrCode')) {
+        //             return;
+        //         }
+        //     }
+            
+        //     // Try simple QR as fallback
+        //     if (window.QRLibraryStatus.qrCodeGenerator) {
+        //         console.log('📱 Trying simple QR generation...');
+        //         if (generateSimpleQR(qrText, 'qrCode')) {
+        //             return;
+        //         }
+        //     }
+            
+        //     // If all methods fail, show fallback
+        //     console.log('❌ All QR generation methods failed');
+        //     showQRFallback('All QR generation methods failed');
+        // }
+        
+        // // Show fallback when QR fails
+        // function showQRFallback(errorMsg) {
+        //     const qrElement = document.getElementById('qrCode');
+        //     if (!qrElement) return;
+            
+        //     qrElement.innerHTML = `
+        //         <div style="text-align: center; padding: 25px; border: 2px dashed #ff6b6b; border-radius: 12px; background: linear-gradient(135deg, #fff5f5, #fef2f2);">
+        //             <i class="fas fa-qrcode" style="color: #6b7280; font-size: 3em; margin-bottom: 15px; opacity: 0.5;"></i>
+        //             <h3 style="color: #dc2626; margin: 10px 0; font-size: 18px;">QR Code Unavailable</h3>
+        //             <p style="color: #6b7280; margin: 10px 0; font-size: 14px;">${errorMsg}</p>
+        //             <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        //                 <h4 style="color: #374151; margin: 0 0 15px 0; font-size: 16px;">📋 Booking Details</h4>
+        //                 <div style="display: grid; gap: 8px; text-align: left;">
+        //                     <div style="display: flex; justify-content: space-between;"><strong>ID:</strong> <span>${bookingData.bookingId}</span></div>
+        //                     <div style="display: flex; justify-content: space-between;"><strong>Location:</strong> <span>${bookingData.location}</span></div>
+        //                     <div style="display: flex; justify-content: space-between;"><strong>Spot:</strong> <span>${bookingData.spot}</span></div>
+        //                     <div style="display: flex; justify-content: space-between;"><strong>Date:</strong> <span>${bookingData.date ? new Date(bookingData.date).toLocaleDateString('en-IN') : 'Today'}</span></div>
+        //                     <div style="display: flex; justify-content: space-between;"><strong>Time:</strong> <span>${bookingData.dateTime || 'Not specified'}</span></div>
+        //                     <div style="display: flex; justify-content: space-between;"><strong>Vehicle:</strong> <span>${bookingData.vehicle || 'Not specified'}</span></div>
+        //                     <div style="display: flex; justify-content: space-between;"><strong>Amount:</strong> <span>${bookingData.amount || 'N/A'}</span></div>
+        //                     <div style="display: flex; justify-content: space-between;"><strong>Valid Until:</strong> <span>${bookingData.validUntil}</span></div>
+        //                 </div>
+        //             </div>
+        //             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+        //                 <button onclick="attemptQRGeneration()" style="padding: 10px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+        //                     <i class="fas fa-redo"></i> Retry QR
+        //                 </button>
+        //                 <button onclick="testQRGeneration()" style="padding: 10px 16px; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+        //                     <i class="fas fa-bug"></i> Test QR
+        //                 </button>
+        //             </div>
+        //         </div>
+        //     `;
+        // }
+        
+        // // Test QR function with multiple libraries
+        // function testQRGeneration() {
+        //     console.log('🧪 Testing QR Generation...');
+            
+        //     // Check library status
+        //     const libStatus = checkQRLibraries();
+        //     console.log('📊 Library status check:', window.QRLibraryStatus);
+            
+        //     if (!libStatus) {
+        //         alert(`❌ No QR libraries available!\nStatus: ${JSON.stringify(window.QRLibraryStatus, null, 2)}`);
+        //         return;
+        //     }
+            
+        //     const qrElement = document.getElementById('qrCode');
+        //     if (!qrElement) {
+        //         alert('❌ QR element not found!');
+        //         return;
+        //     }
+            
+        //     const testText = 'TEST-QR-' + Date.now();
+        //     qrElement.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-flask"></i> Testing QR...</div>';
+            
+        //     // Try canvas QR first
+        //     if (window.QRLibraryStatus.qrCodeCanvas) {
+        //         try {
+        //             console.log('🎨 Testing canvas QR...');
+        //             QRCode.toCanvas(qrElement, testText, {
+        //                 width: 150,
+        //                 height: 150,
+        //                 margin: 2,
+        //                 color: {
+        //                     dark: '#dc2626',  // Red for test
+        //                     light: '#FFFFFF'
+        //                 }
+        //             }, function (error) {
+        //                 if (error) {
+        //                     console.log('❌ Canvas test failed:', error);
+        //                     trySimpleQRTest();
+        //                 } else {
+        //                     alert('✅ Canvas QR Test Successful! Red QR code generated.');
+        //                     console.log('✅ Canvas QR test successful!');
+        //                     setTimeout(() => {
+        //                         attemptQRGeneration();
+        //                     }, 2000);
+        //                 }
+        //             });
+        //             return;
+        //         } catch (error) {
+        //             console.log('❌ Canvas QR test exception:', error);
+        //         }
+        //     }
+            
+        //     // Try simple QR if canvas failed
+        //     trySimpleQRTest();
+            
+        //     function trySimpleQRTest() {
+        //         if (window.QRLibraryStatus.qrCodeGenerator) {
+        //             try {
+        //                 console.log('📱 Testing simple QR...');
+                        
+        //                 const qr = qrcode(0, 'M');
+        //                 qr.addData(testText);
+        //                 qr.make();
+                        
+        //                 const qrHTML = qr.createImgTag(3, 4, "Test QR");
+        //                 qrElement.innerHTML = `
+        //                     <div style="text-align: center; padding: 20px;">
+        //                         <div style="display: inline-block; padding: 10px; background: #fee2e2; border-radius: 8px;">
+        //                             ${qrHTML}
+        //                         </div>
+        //                         <p style="margin-top: 10px; color: #dc2626; font-weight: bold;">🧪 Simple QR Test</p>
+        //                     </div>
+        //                 `;
+                        
+        //                 alert('✅ Simple QR Test Successful! Basic QR code generated.');
+        //                 console.log('✅ Simple QR test successful!');
+                        
+        //                 setTimeout(() => {
+        //                     attemptQRGeneration();
+        //                 }, 2000);
+                        
+        //             } catch (error) {
+        //                 console.log('❌ Simple QR test failed:', error);
+        //                 alert('❌ All QR tests failed: ' + error.message);
+        //                 showQRFallback('All tests failed');
+        //             }
+        //         } else {
+        //             alert('❌ No QR libraries available for testing!');
+        //             showQRFallback('No libraries available');
+        //         }
+        //     }
+        // }
+
+        // // Legacy function for compatibility
+        // function generateQRCode() {
+        //     console.log('🔄 generateQRCode() called - redirecting to attemptQRGeneration()');
+        //     attemptQRGeneration();
+        // }
+
+        // // Download QR Code
+        // function downloadQR() {
+        //     const canvas = document.querySelector('#qrCode canvas');
+        //     if (!canvas) {
+        //         alert('QR Code not available for download. Please generate QR code first.');
+        //         return;
+        //     }
+            
+        //     try {
+        //         const link = document.createElement('a');
+        //         link.download = `parking-qr-${bookingData.bookingId}.png`;
+        //         link.href = canvas.toDataURL('image/png');
+        //         document.body.appendChild(link);
+        //         link.click();
+        //         document.body.removeChild(link);
+        //         console.log('QR Code download initiated');
+        //     } catch (error) {
+        //         console.error('QR Code download failed:', error);
+        //         alert('Failed to download QR code: ' + error.message);
+        //     }
+        // }
+
+        // // Share QR Code
+        // function shareQR() {
+        //     if (navigator.share) {
+        //         navigator.share({
+        //             title: 'SmartPark Booking QR Code',
+        //             text: `My parking booking at ${bookingData.location}, Spot ${bookingData.spot}`,
+        //             url: window.location.href
+        //         });
+        //     } else {
+        //         // Fallback for browsers that don't support Web Share API
+        //         const textArea = document.createElement('textarea');
+        //         textArea.value = `Booking ID: ${bookingData.bookingId}\nLocation: ${bookingData.location}\nSpot: ${bookingData.spot}\nValid Until: ${bookingData.validUntil}`;
+        //         document.body.appendChild(textArea);
+        //         textArea.select();
+        //         document.execCommand('copy');
+        //         document.body.removeChild(textArea);
+        //         alert('Booking details copied to clipboard!');
+        //     }
+        // }
+
+        // Store booking data in localStorage for demo purposes
+        const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+        bookings.push({
+            ...bookingData,
+            createdAt: new Date().toISOString()
+        });
+        localStorage.setItem('bookings', JSON.stringify(bookings));
+        
+        console.log('Booking successful! Booking data stored.');
+
+        // User authentication check
+        function checkUserAuth() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            
+            if (currentUser && currentUser.id) {
+                // User is logged in, show user menu
+                const userMenu = document.getElementById('userMenu');
+                const userNameSpan = document.getElementById('userName');
+                if (userMenu && userNameSpan) {
+                    userMenu.style.display = 'block';
+                    userNameSpan.textContent = currentUser.firstName + ' ' + currentUser.lastName;
+                }
+            } else {
+                // User is not logged in, hide user menu
+                const userMenu = document.getElementById('userMenu');
+                if (userMenu) {
+                    userMenu.style.display = 'none';
+                }
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        // Initialize page when ready
+        // window.addEventListener('load', function() {
+        //     console.log('🚀 Page loaded');
+        //     checkUserAuth();
+            
+            // Check libraries and generate QR
+        //     setTimeout(() => {
+        //         const librariesReady = checkQRLibraries();
+        //         console.log('🔍 QR Libraries status:', window.QRLibraryStatus);
+                
+        //         if (librariesReady) {
+        //             attemptQRGeneration();
+        //         } else {
+        //             console.log('⏳ Waiting for libraries to load...');
+        //             // Set up a retry mechanism
+        //             let retries = 0;
+        //             const maxRetries = 5;
+        //             const retryInterval = setInterval(() => {
+        //                 retries++;
+        //                 console.log(`🔄 Retry ${retries}/${maxRetries} - checking libraries...`);
+                        
+        //                 if (checkQRLibraries()) {
+        //                     clearInterval(retryInterval);
+        //                     attemptQRGeneration();
+        //                 } else if (retries >= maxRetries) {
+        //                     clearInterval(retryInterval);
+        //                     console.log('❌ Max retries reached, showing fallback');
+        //                     showQRFallback('Libraries failed to load after multiple attempts');
+        //                 }
+        //             }, 2000);
+        //         }
+        //     }, 1500);
+        // });
+
+        function checkAuthAndBook() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            window.location.href = (user && user.id) ? 'booking.html' : 'login.html';
+        }
+
+        async function logout() {
+            if (window.ParkEaseAuth && window.ParkEaseAuth.signOut) {
+                await window.ParkEaseAuth.signOut();
+            } else {
+                localStorage.removeItem('currentUser');
+                sessionStorage.removeItem('bookingData');
+            }
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html> 

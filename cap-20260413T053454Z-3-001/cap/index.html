@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkEase Smart Parking System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase (load once) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><i class="fas fa-parking"></i> ParkEase</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+                <li><a href="#" onclick="checkAuthAndBook(); return false;" class="nav-link">Book Parking</a></li>
+                <li><a href="#" onclick="checkAuthAndDashboard(); return false;" class="nav-link">Dashboard</a></li>
+                <li><a href="admin-login.html" class="nav-link">Admin</a></li>
+                <li><a href="login.html" class="nav-link login-btn">Login</a></li>
+                <li><a href="signup.html" class="nav-link signup-btn">Sign Up</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">Smart Parking Made Simple</h1>
+                <p class="hero-description">
+                    Find, book, and pay for parking spots instantly. No more circling blocks or worrying about parking tickets.
+                </p>
+                <div class="hero-buttons">
+                    <button class="cta-button" onclick="checkAuthAndBook()">
+                        <i class="fas fa-map-marker-alt"></i> Find Parking
+                    </button>
+                    <button class="secondary-button" onclick="window.location.href='signup.html'">
+                        <i class="fas fa-user-plus"></i> Get Started
+                    </button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="parking-illustration">
+                    <i class="fas fa-car"></i>
+                    <i class="fas fa-motorcycle"></i>
+                    <i class="fas fa-receipt"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose ParkEase?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search-location"></i>
+                    </div>
+                    <h3>Find Nearby Spots</h3>
+                    <p>Locate available parking spots near your destination with real-time availability.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Book in Advance</h3>
+                    <p>Reserve your parking spot up to 24 hours in advance to guarantee availability.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h3>Secure Payment</h3>
+                    <p>Pay securely online with multiple payment options including cards and digital wallets.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                    <h3>Instant Booking Confirmation
+                    </h3>
+                    <p>Receive immediate confirmation and parking details after successful booking.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-desktop-alt"></i>
+                    </div>
+                    <h3>Desktop Website Access
+                    </h3>
+                    <p>Manage your parking from anywhere with our user-friendly mobile application.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>24/7 Security</h3>
+                    <p>All parking locations are monitored 24/7 for your vehicle's safety.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps-container">
+                <div class="how-step">
+                    <div class="how-step-number">1</div>
+                    <div class="how-step-content">
+                        <h3>Select Location</h3>
+                        <p>Choose your destination or browse available parking locations on the map.</p>
+                    </div>
+                </div>
+                <div class="how-step">
+                    <div class="how-step-number">2</div>
+                    <div class="how-step-content">
+                        <h3>Choose Spot & Time</h3>
+                        <p>Pick your preferred parking spot and time slot from available options.</p>
+                    </div>
+                </div>
+                <div class="how-step">
+                    <div class="how-step-number">3</div>
+                    <div class="how-step-content">
+                        <h3>Enter Vehicle Details</h3>
+                        <p>Provide your vehicle number and confirm your booking details.</p>
+                    </div>
+                </div>
+                <div class="how-step">
+                    <div class="how-step-number">4</div>
+                    <div class="how-step-content">
+                        <h3>Proceed to Payment
+                        </h3>
+                        <p>Complete secure payment and receive a receipt with a unique ID for parking access.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-parking"></i> ParkEase</h3>
+                    <p>Smart parking made simple. Book, pay and park with ease using our
+                        intelligent real-time parking system.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="login.html">Login</a></li>
+                        <li><a href="signup.html">Sign Up</a></li>
+                    </ul>
+                </div>
+                <!-- Mission Section (Option 2) -->
+            <div class="footer-section">
+                <h4>Our Mission</h4>
+                <p class="mission-text">
+                    We’re building the future of smart parking aiming to reducing traffic,
+                    saving time, and making urban mobility effortless through
+                    intelligent booking, automation, and secure digital access.
+                </p>
+            </div>
+
+            </div>
+            <div class="footer-bottom">
+                <p> ParkEase • Smart Parking System • Built for modern cities</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="script.js"></script>
+    <script>
+        function checkAuthAndBook() {
+            const user = window.ParkEaseAuth ? (window.ParkEaseAuth.getCurrentUser() || window.ParkEaseAuth.getStoredUser()) : JSON.parse(localStorage.getItem('currentUser') || 'null');
+            window.location.href = (user && user.id) ? 'booking.html' : 'login.html';
+        }
+        function checkAuthAndDashboard() {
+            const user = window.ParkEaseAuth ? (window.ParkEaseAuth.getCurrentUser() || window.ParkEaseAuth.getStoredUser()) : JSON.parse(localStorage.getItem('currentUser') || 'null');
+            window.location.href = (user && user.id) ? 'dashboard.html' : 'login.html';
+        }
+    </script>
+</body>
+
+</html>
